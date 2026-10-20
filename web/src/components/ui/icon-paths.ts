@@ -1,0 +1,31 @@
+// COR icon set: 16px grid, 1.5px stroke, square caps. Source: design-system/project/assets/Icons.
+export const ICON_PATHS = {
+  "analytics": "M2 14h12 M4 11V8 M8 11V3 M12 11V6",
+  "connections": "M5.5 2v3 M10.5 2v3 M3.5 5h9v2.5a4.5 4.5 0 0 1-9 0z M8 12v2.5",
+  "data": "M3 4c0-1.1 2.2-2 5-2s5 .9 5 2-2.2 2-5 2-5-.9-5-2z M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4 M3 8c0 1.1 2.2 2 5 2s5-.9 5-2",
+  "reports": "M3.5 1.5h6l3 3v10h-9z M9.5 1.5v3h3 M6 8.5h4 M6 11h4",
+  "team": "M6 7a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z M1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4 M11 2.5a2.5 2.5 0 0 1 0 4.5 M12.5 10c1.2.5 2 1.8 2 4",
+  "settings": "M2 4.5h12 M2 11.5h12 M10 2.5v4 M5 9.5v4",
+  "bell": "M4 11V7a4 4 0 0 1 8 0v4l1 1.5H3z M6.5 14.5h3",
+  "search": "M7 12A5 5 0 1 0 7 2a5 5 0 0 0 0 10z M10.5 10.5l3.5 3.5",
+  "plus": "M8 3v10 M3 8h10",
+  "close": "M3.5 3.5l9 9 M12.5 3.5l-9 9",
+  "chevron-down": "M4 6l4 4 4-4",
+  "chevron-right": "M6 4l4 4-4 4",
+  "sync": "M13 8a5 5 0 0 1-8.5 3.5 M3 8a5 5 0 0 1 8.5-3.5 M11.5 1.5v3h-3 M4.5 14.5v-3h3",
+  "export": "M8 2v8 M4.5 6.5L8 10l3.5-3.5 M2.5 13.5h11",
+  "calendar": "M2.5 3.5h11v10h-11z M2.5 6.5h11 M5.5 2v3 M10.5 2v3",
+  "more": "M3 8h1 M7.5 8h1 M12 8h1",
+  "drag": "M5.5 4h1 M9.5 4h1 M5.5 8h1 M9.5 8h1 M5.5 12h1 M9.5 12h1",
+  "check": "M3 8.5l3 3 7-7",
+  "warning": "M8 2l6.5 12h-13z M8 6.5v3.5 M8 12v.5",
+  "info": "M8 14.5A6.5 6.5 0 1 0 8 1.5a6.5 6.5 0 0 0 0 13z M8 7v4.5 M8 4.5v.5",
+  "lock": "M3.5 7.5h9v6.5h-9z M5.5 7.5V5a2.5 2.5 0 0 1 5 0v2.5",
+  "external": "M9.5 2.5h4v4 M13.5 2.5L7.5 8.5 M11.5 9.5v4h-9v-9h4",
+  "eye": "M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+  "filter": "M2 3h12l-4.5 5.5V13l-3 1.5V8.5z",
+  "layout": "M2.5 2.5h11v11h-11z M2.5 6.5h11 M7 6.5v7",
+  "logout": "M6 2.5H2.5v11H6 M10 5l3 3-3 3 M13 8H6",
+} as const;
+
+export type IconName = keyof typeof ICON_PATHS;

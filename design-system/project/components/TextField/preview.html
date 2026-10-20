@@ -1,0 +1,22 @@
+<!-- @dsCard group="Inputs" height=300 subtitle="Label, hint, help, error, search, read-only" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>TextField — preview</title></head>
+<body>
+<div class="cor-pad" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6) var(--space-8)">
+  <label class="cor-fieldset"><span class="cor-fieldset__label"><span class="cor-tag">Work email</span><span class="cor-tag">Required</span></span>
+    <input class="cor-input" id="tf-email" type="email" value="dakota@northwind.co"></label>
+  <label class="cor-fieldset"><span class="cor-fieldset__label"><span class="cor-tag">Password</span></span>
+    <input class="cor-input" id="tf-pass" type="password" value="hunter22" aria-invalid="true" aria-describedby="tf-pass-err">
+    <span class="cor-help cor-help--error" id="tf-pass-err"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l6.5 12h-13z M8 6.5v3.5 M8 12v.5"/></svg>That password doesn't match this email. Try again or reset it.</span></label>
+  <label class="cor-fieldset"><span class="cor-fieldset__label"><span class="cor-tag">Threshold</span><span class="cor-tag">ROAS ×</span></span>
+    <input class="cor-input cor-input--mono" id="tf-thr" inputmode="decimal" value="2.50">
+    <span class="cor-help">Alerts fire when ROAS stays below this for the whole period.</span></label>
+  <div class="cor-fieldset"><span class="cor-fieldset__label"><span class="cor-tag">Search campaigns</span></span>
+    <span class="cor-input-wrap"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M7 12A5 5 0 1 0 7 2a5 5 0 0 0 0 10z M10.5 10.5l3.5 3.5"/></svg><input class="cor-input" id="tf-search" type="search" placeholder="Name or ID"><kbd>/</kbd></span></div>
+  <label class="cor-fieldset"><span class="cor-fieldset__label"><span class="cor-tag">Workspace currency</span><span class="cor-tag"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 7.5h9v6.5h-9z M5.5 7.5V5a2.5 2.5 0 0 1 5 0v2.5"/></svg>Admin only</span></span>
+    <input class="cor-input" id="tf-cur" value="USD — US dollar" readonly>
+    <span class="cor-help">Only admins can change workspace settings.</span></label>
+</div>
+</body>
+</html>

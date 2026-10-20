@@ -1,0 +1,8 @@
+/* ───── Switch: square-shouldered toggle with a printed state ───── */
+.cor-switch { display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer; }
+.cor-switch input { appearance: none; margin: 0; position: relative; width: 30px; height: 16px; flex: none; border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; transition: background 120ms ease-out; }
+.cor-switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 9px; height: 9px; border-radius: 1px; background: var(--line-strong); transition: left 120ms ease-out; }
+.cor-switch input:checked { border-color: var(--cobalt); background: var(--cobalt); }
+.cor-switch input:checked::after { left: 16px; background: var(--on-cobalt); }
+.cor-switch input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.cor-switch__state { width: 26px; font: 500 11px/1 var(--font-mono); letter-spacing: .06em; color: var(--ink-muted); }

@@ -1,0 +1,39 @@
+/* ───── Data table ───── */
+.cor-table-wrap { min-width: 0; overflow-x: auto; }
+.cor-table { width: 100%; border-collapse: collapse; font: 400 14px/20px var(--font-sans); }
+.cor-table th { position: sticky; top: 0; z-index: var(--z-sticky); padding: 0 var(--space-3) var(--space-2); border-bottom: 1px solid var(--line-strong); background: var(--bg); color: var(--ink-muted); font: 500 11px/14px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; text-align: left; white-space: nowrap; }
+.cor-table th[aria-sort] { color: var(--ink); }
+.cor-table th button { padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; }
+.cor-table td { padding: 10px var(--space-3); border-bottom: 1px solid var(--line); vertical-align: middle; }
+.cor-table th:first-child, .cor-table td:first-child { padding-left: 0; }
+.cor-table th:last-child, .cor-table td:last-child { padding-right: 0; }
+.cor-table .n { text-align: right; }
+.cor-table td.n { font: 400 13px/20px var(--font-mono); font-variant-numeric: tabular-nums; }
+.cor-table tbody tr:hover td { background: var(--surface); }
+.cor-table tr[aria-selected="true"] td { background: var(--cobalt-soft); }
+.cor-table tfoot td { border-top: 2px solid var(--rail); border-bottom: 0; font-weight: 500; }
+.cor-table td .sub { display: block; color: var(--ink-muted); font: 400 12px/16px var(--font-mono); }
+.cor-minibar { display: inline-block; height: 6px; width: var(--w); vertical-align: middle; background: var(--ink-muted); }
+.cor-pager { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-3); padding-top: var(--space-3); }
+/* Team tables: fixed columns so members and invites line up. */
+.cor-team-table { table-layout: fixed; }
+.cor-team-table__role { width: 160px; }
+.cor-team-table__when { width: 140px; }
+.cor-team-table__actions { width: 184px; }
+.cor-team-table__select { height: 28px; width: 128px; }
+.cor-person { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+.cor-invite-roles { display: grid; gap: var(--space-2); margin: 0; padding: 0; border: 0; }
+.cor-invite-roles legend { margin-bottom: var(--space-2); }
+/* Phones: each row stacks the person above a role | status | actions grid, so the controls still line up. */
+@media (max-width: 767px) {
+  .cor-team-table, .cor-team-table tbody { display: block; }
+  .cor-team-table colgroup, .cor-team-table thead { display: none; }
+  .cor-team-table tr { display: grid; grid-template-columns: calc(28px + var(--space-3) + 128px) minmax(0, 1fr) auto; grid-template-areas: "who who who" "role when act"; column-gap: var(--space-3); align-items: center; row-gap: var(--space-2); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
+  .cor-team-table td { border: 0; padding: 0; }
+  .cor-team-table td:nth-child(1) { grid-area: who; }
+  .cor-team-table td:nth-child(2) { grid-area: role; padding-left: calc(28px + var(--space-3)); }
+  .cor-team-table td:nth-child(3) { grid-area: when; white-space: nowrap; }
+  .cor-team-table--members td:nth-child(3) { display: none; }
+  .cor-team-table--invites tr { grid-template-columns: calc(28px + var(--space-3) + 80px) minmax(0, 1fr) auto; }
+  .cor-team-table td:nth-child(4) { grid-area: act; }
+}

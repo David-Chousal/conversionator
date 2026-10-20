@@ -1,0 +1,12 @@
+/* Trace: line chart with direct labels */
+.cor-trace { display: block; width: 100%; height: auto; overflow: visible; }
+.cor-trace .grid { stroke: var(--line); stroke-width: 1; }
+.cor-trace .tick { fill: var(--ink-muted); font: 400 11px var(--font-mono); }
+.cor-trace .mark { stroke: var(--line-strong); stroke-width: 1; }
+.cor-trace .lbl { font: 500 12px var(--font-sans); }
+.cor-trace .val { fill: var(--ink); font: 400 12px var(--font-mono); }
+.cor-trace .flag { fill: var(--flare); }
+.cor-trace .flag-text { fill: var(--ink); font: 500 10px var(--font-mono); letter-spacing: .06em; }
+.cor-trace .cross { stroke: var(--cobalt); stroke-width: 1; }
+.cor-trace .tip { fill: var(--surface); stroke: var(--line); }
+.cor-trace .tip-text { fill: var(--ink); font: 400 11px var(--font-mono); }

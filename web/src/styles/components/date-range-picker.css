@@ -1,0 +1,13 @@
+/* ───── Date range picker ───── */
+.cor-cal{display:grid;grid-template-columns:160px minmax(0,1fr);width:min(600px,100%);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);box-shadow:var(--shadow-pop);overflow:hidden}
+.cor-cal__presets{display:grid;align-content:start;gap:2px;padding:var(--space-2);border-right:1px solid var(--line)}
+.cor-cal__presets [aria-current]{background:var(--cobalt-soft)}
+.cor-cal__main{display:grid;gap:var(--space-3);padding:var(--space-3) var(--space-4)}
+.cor-cal__grid{display:grid;grid-template-columns:repeat(7,1fr);row-gap:2px;text-align:center}
+.cor-cal__grid button{height:30px;border:0;background:none;color:var(--ink);font:400 13px/1 var(--font-mono);cursor:pointer}
+.cor-cal__grid .in{background:var(--cobalt-soft)}
+.cor-cal__grid .edge{background:var(--cobalt);color:var(--on-cobalt);font-weight:500}
+.cor-cal__grid .out{color:var(--ink-muted)}
+.cor-cal__grid .today{box-shadow:inset 0 -2px 0 var(--flare)}
+.cor-cal__foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--line)}
+

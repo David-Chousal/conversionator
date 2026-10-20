@@ -1,0 +1,14 @@
+<!-- @dsCard group="Inputs" height=170 subtitle="Multi-value field for recipients and metrics" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>TokenInput — preview</title></head>
+<body>
+<div class="cor-pad" style="display:grid;gap:var(--space-6);max-width:640px">
+  <label class="cor-fieldset"><span class="cor-fieldset__label"><span class="cor-tag">Recipients</span><span class="cor-tag">3 of 20</span></span>
+    <span class="cor-tokens"><span class="cor-token">maria@northwind.co<button type="button" aria-label="Remove maria@northwind.co"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9 M12.5 3.5l-9 9"/></svg></button></span><span class="cor-token">troy@northwind.co<button type="button" aria-label="Remove troy@northwind.co"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9 M12.5 3.5l-9 9"/></svg></button></span><span class="cor-token cor-token--invalid">sam@northwind<button type="button" aria-label="Remove sam@northwind"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9 M12.5 3.5l-9 9"/></svg></button></span><input id="tk-in" placeholder="Add email…" aria-describedby="tk-err"></span>
+    <span class="cor-help cor-help--error" id="tk-err"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l6.5 12h-13z M8 6.5v3.5 M8 12v.5"/></svg>"sam@northwind" isn't a full email address.</span></label>
+  <label class="cor-fieldset"><span class="cor-fieldset__label"><span class="cor-tag">Metrics</span></span>
+    <span class="cor-tokens"><span class="cor-token">Spend<button type="button" aria-label="Remove Spend"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9 M12.5 3.5l-9 9"/></svg></button></span><span class="cor-token">ROAS<button type="button" aria-label="Remove ROAS"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9 M12.5 3.5l-9 9"/></svg></button></span><span class="cor-token">CPA<button type="button" aria-label="Remove CPA"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9 M12.5 3.5l-9 9"/></svg></button></span><input id="tk-m" placeholder="Add metric…"></span></label>
+</div>
+</body>
+</html>

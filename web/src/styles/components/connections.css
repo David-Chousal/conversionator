@@ -1,0 +1,25 @@
+/* Strict grid: only the platform column flexes. Every other track is fixed, so cells line up across rows and sections whatever their content. */
+.cor-conn { --conn-signal: 216px; --conn-datasets: 96px; --conn-actions: 176px; grid-template-columns: 32px minmax(0, 1fr) var(--conn-signal) var(--conn-datasets) var(--conn-actions); grid-template-areas: "mark main signal datasets actions"; }
+.cor-conn > .cor-mark { grid-area: mark; }
+.cor-conn__main { grid-area: main; }
+.cor-conn__signal { grid-area: signal; min-width: 0; }
+/* Signal over its schedule line: "Auto · next in 56m". */
+.cor-conn__health { display: grid; justify-items: start; gap: 2px; }
+.cor-conn__datasets { grid-area: datasets; }
+.cor-conn__actions { grid-area: actions; justify-content: flex-end; }
+.cor-conn--head > :nth-child(1) { grid-area: mark; } .cor-conn--head > :nth-child(2) { grid-area: main; } .cor-conn--head > :nth-child(3) { grid-area: signal; } .cor-conn--head > :nth-child(4) { grid-area: datasets; } .cor-conn--head > :nth-child(5) { grid-area: actions; }
+.cor-conn__account--caution { color: var(--caution) !important; }
+.cor-conn__account--negative { color: var(--negative) !important; white-space: normal !important; }
+.cor-mark--muted { border-style: dashed; color: var(--ink-muted); }
+@media (max-width: 767px) {
+  .cor-conn { grid-template-columns: 32px minmax(0, 1fr) var(--conn-datasets); grid-template-areas: "mark main main" ". signal datasets" ". actions actions"; row-gap: var(--space-2); }
+  .cor-conn__actions { justify-content: flex-start; }
+  .cor-conn--head { display: none; }
+}
+.cor-oauth { min-height: 100%; display: grid; place-items: center; padding-block: var(--space-8); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.cor-oauth__card { width: min(480px, 100%); display: grid; gap: var(--space-4); padding: var(--space-4) var(--space-6) var(--space-6); border-top: 2px solid var(--rail); background: var(--surface); box-shadow: var(--shadow-pop); }
+.cor-oauth__title { margin: 0; font: 700 22px/28px var(--font-sans); letter-spacing: -.02em; text-wrap: balance; }
+.cor-crm__row { grid-template-columns: 32px minmax(0, 1fr) var(--conn-signal, 216px) 176px; }
+.cor-crm__settings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6); }
+@media (max-width: 1023px) { .cor-crm__settings { grid-template-columns: 1fr; } }
+@media (max-width: 767px) { .cor-crm__row { grid-template-columns: 32px minmax(0, 1fr); } .cor-crm__row > :nth-child(n + 3) { grid-column: 2; } }

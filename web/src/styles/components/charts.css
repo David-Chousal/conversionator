@@ -1,0 +1,15 @@
+/* ───── Charts: bars, share ring, heat grid ───── */
+.cor-bars .bar-label { fill: var(--ink); font: 500 12px var(--font-sans); }
+.cor-ring { display: block; width: 160px; height: 160px; flex: none; }
+.cor-ring__center { fill: var(--ink); font: 700 16px var(--font-sans); letter-spacing: -.02em; }
+.cor-ring__sub { fill: var(--ink-muted); font: 500 7px var(--font-mono); letter-spacing: .06em; }
+.cor-keylist { display: grid; gap: var(--space-2); min-width: 0; }
+.cor-keylist div { display: grid; grid-template-columns: 10px 1fr auto auto; align-items: center; gap: var(--space-2); font: 500 14px/20px var(--font-sans); }
+.cor-keylist i { width: 10px; height: 10px; border-radius: var(--radius-sm); }
+.cor-keylist .cor-num { color: var(--ink-muted); font-size: 13px; text-align: right; }
+.cor-heat { display: grid; grid-template-columns: 32px repeat(12, minmax(0, 1fr)); gap: 2px; font: 400 10px/1 var(--font-mono); color: var(--ink-muted); }
+.cor-heat i { aspect-ratio: 1.6; border-radius: 1px; }
+.cor-heat span { display: flex; align-items: center; }
+.cor-heat .h { justify-content: center; padding-top: 4px; }
+.cor-heat-legend { display: flex; align-items: center; gap: 2px; }
+.cor-heat-legend i { width: 20px; height: 10px; }

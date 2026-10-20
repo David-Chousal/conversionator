@@ -1,0 +1,6 @@
+/* ───── Login ───── */
+.cor-login { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 420px); min-height: 100%; }
+.cor-login__art { position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-8); padding: var(--space-8); overflow: hidden; background: var(--ink); color: var(--bg); }
+.cor-login__art .cor-wordmark { color: var(--bg); padding: 0; }
+.cor-login__form { display: grid; align-content: center; gap: var(--space-4); padding: var(--space-8); background: var(--bg); }
+@media (max-width: 767px) { .cor-login { grid-template-columns: 1fr; } .cor-login__art { display: none; } }

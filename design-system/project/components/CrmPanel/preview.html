@@ -1,0 +1,30 @@
+<!-- @dsCard group="Settings" height=380 subtitle="HubSpot as the CRM that attributes leads and deals" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>CrmPanel — preview</title></head>
+<body>
+<div class="cor-pad">
+  <section class="cor-bay">
+    <div class="cor-bay__head"><h3 class="cor-bay__title">CRM &amp; attribution</h3><span class="cor-tag">Leads and deals for every ad</span></div>
+    <p class="cor-help" style="margin:0;max-width:70ch">Your CRM isn't an ad platform. COR reads its contacts and deals to tell which platform, campaign and ad produced each lead and sale, replacing the numbers each platform reports about itself.</p>
+    <div class="cor-list"><div class="cor-list__row cor-crm__row">
+      <span class="cor-mark">H</span>
+      <span class="cor-list__main"><strong>HubSpot <span class="cor-tag">CRM</span></strong><span>Portal 7731902 · 18,240 contacts · 1,310 deals</span></span>
+      <span><span class="cor-signal cor-signal--ok"><span class="cor-signal__bars"><i></i><i></i><i></i><i></i></span>Synced <b>12m</b></span></span>
+      <span class="cor-list__end"><button class="cor-key cor-key--sm" type="button"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 0 1-8.5 3.5 M3 8a5 5 0 0 1 8.5-3.5 M11.5 1.5v3h-3 M4.5 14.5v-3h3"/></svg>Sync now</button><button class="cor-key cor-key--sm cor-key--icon" type="button" aria-label="HubSpot actions"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h1 M7.5 8h1 M12 8h1"/></svg></button></span>
+    </div></div>
+    <div class="cor-crm__settings">
+      <label class="cor-fieldset"><span class="cor-fieldset__label"><span class="cor-tag">Count a lead at</span><span class="cor-tag">Lifecycle stage</span></span>
+        <button class="cor-input cor-input--select" type="button">Marketing qualified lead <svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button>
+        <span class="cor-help">Contacts count as leads once they reach this stage in HubSpot.</span></label>
+      <label class="cor-fieldset"><span class="cor-fieldset__label"><span class="cor-tag">Count a conversion at</span></span>
+        <input class="cor-input" id="crm-deal" value="Deal stage · Closed won" readonly>
+        <span class="cor-help">A conversion is a deal marked closed won; its amount is the revenue.</span></label>
+      <label class="cor-fieldset"><span class="cor-fieldset__label"><span class="cor-tag">Attribution model</span></span>
+        <input class="cor-input" id="crm-model" value="Last ad interaction" readonly>
+        <span class="cor-help">Each lead and deal is credited to the last ad the contact clicked before converting.</span></label>
+    </div>
+  </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!-- @dsCard group="Pages" height=1340 subtitle="The whole board: shell, mixer, attribution, readouts, trace, ledger" width=1280 page -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>AnalyticsPage — preview</title></head>
+<body>
+<div class="cor-shell" style="min-height:1320px">
+  <nav class="cor-side" aria-label="Main">
+  <span class="cor-wordmark">COR <span class="cor-tag">Northwind</span></span>
+  <div class="cor-nav"><a href="#" aria-current="page"><svg class="cor-ico cor-ico--20" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 14h12 M4 11V8 M8 11V3 M12 11V6"/></svg>Analytics<kbd>G A</kbd></a><a href="#" ><svg class="cor-ico cor-ico--20" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 2v3 M10.5 2v3 M3.5 5h9v2.5a4.5 4.5 0 0 1-9 0z M8 12v2.5"/></svg>Connections<kbd>G C</kbd></a><a href="#" ><svg class="cor-ico cor-ico--20" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4c0-1.1 2.2-2 5-2s5 .9 5 2-2.2 2-5 2-5-.9-5-2z M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4 M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/></svg>Data<kbd>G D</kbd></a><a href="#" ><svg class="cor-ico cor-ico--20" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 1.5h6l3 3v10h-9z M9.5 1.5v3h3 M6 8.5h4 M6 11h4"/></svg>Reports<kbd>G R</kbd></a><a href="#" ><svg class="cor-ico cor-ico--20" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 7a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z M1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4 M11 2.5a2.5 2.5 0 0 1 0 4.5 M12.5 10c1.2.5 2 1.8 2 4"/></svg>Team<kbd>G T</kbd></a><a href="#" ><svg class="cor-ico cor-ico--20" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4.5h12 M2 11.5h12 M10 2.5v4 M5 9.5v4"/></svg>Settings<kbd>G S</kbd></a></div>
+  <div class="cor-side__foot"><span class="cor-avatar">DC</span><span class="cor-list__main"><strong>David Chousal</strong><span>Admin</span></span><button class="cor-key cor-key--sm cor-key--icon" type="button" aria-label="Sign out" style="margin-left:auto"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2.5H2.5v11H6 M10 5l3 3-3 3 M13 8H6"/></svg></button></div>
+</nav>
+  <div style="min-width:0">
+    <header class="cor-top"><h1 class="cor-top__title">Analytics</h1><div class="cor-top__end"><span class="cor-signal cor-signal--stale"><span class="cor-signal__bars"><i></i><i></i><i class="off"></i><i class="off"></i></span>1 of 3 synced</span><button class="cor-key cor-key--sm cor-key--icon" type="button" aria-label="Alerts, 2 unread"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 11V7a4 4 0 0 1 8 0v4l1 1.5H3z M6.5 14.5h3"/></svg></button></div></header>
+    <div class="cor-banner"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l6.5 12h-13z M8 6.5v3.5 M8 12v.5"/></svg><span><strong>Meta Ads is 6h behind.</strong> Its numbers are from its last sync.</span><span class="cor-banner__end"><button class="cor-key cor-key--sm" type="button">Reconnect</button></span></div>
+    <main class="cor-main">
+      <section class="cor-bay" aria-label="Dashboard filters">
+    <div class="cor-bay__head">
+      <span class="cor-tag">Window · Mar 1 → Mar 30 · 30 days</span>
+      <button class="cor-field" type="button"><span class="cor-tag">Campaign</span>All campaigns ▾</button>
+    </div>
+    <div>
+      <svg class="cor-scrub" viewBox="0 0 600 48" preserveAspectRatio="none" aria-label="Daily spend, last 60 days, with the last 30 selected">
+        <rect class="win" x="300" y="0" width="300" height="48"/>
+        <path class="area" d="M0,48 L0,30 L50,26 L100,28 L150,22 L200,25 L250,20 L300,24 L350,18 L400,21 L450,15 L500,17 L550,12 L600,10 L600,48 Z"/>
+        <rect class="win-line" x="300" y="46" width="300" height="2"/>
+        <rect class="handle" x="298" y="0" width="4" height="48"/>
+        <rect class="handle" x="596" y="0" width="4" height="48"/>
+      </svg>
+      <div style="display:flex;justify-content:space-between" class="cor-tag"><span>Jan 30</span><span>Mar 1</span><span>Mar 30</span></div>
+    </div>
+    <div style="display:grid;gap:var(--space-3)">
+      <div class="cor-strip" aria-hidden="true">
+        <i style="flex:44.4;background:var(--ch-1)"></i><i style="flex:30.9;background:var(--ch-2)"></i><i class="muted" style="flex:17.9"></i><i style="flex:6.8;background:var(--ch-4)"></i>
+      </div>
+      <div class="cor-toggles">
+        <button class="cor-toggle" type="button" aria-pressed="true"><span class="box" style="background:var(--ch-1)"></span><span class="cor-tag">CH·01</span>Google Ads <span class="cor-num">44%</span></button>
+        <button class="cor-toggle" type="button" aria-pressed="true"><span class="box" style="background:var(--ch-2)"></span><span class="cor-tag">CH·02</span>Meta Ads <span class="cor-num">31%</span></button>
+        <button class="cor-toggle" type="button" aria-pressed="false"><span class="box" style="background:var(--ch-3)"></span><span class="cor-tag">CH·03</span>LinkedIn Ads <span class="cor-num">18%</span></button>
+        <button class="cor-toggle" type="button" aria-pressed="true"><span class="box" style="background:var(--ch-4)"></span><span class="cor-tag">CH·04</span>TikTok Ads <span class="cor-num">7%</span></button>
+      </div>
+    </div>
+  </section>
+      <div class="cor-grid12"><div class="span-12"><section class="cor-bay">
+    <div class="cor-bay__head"><h3 class="cor-bay__title">Attribution</h3><span class="cor-tag">HubSpot · Last ad interaction · leads counted at marketing qualified lead</span></div>
+    <div class="cor-strip" role="img" aria-label="70% of HubSpot leads attributed to ads"><i style="flex:4184;background:var(--cobalt)"></i><i class="muted" style="flex:1764"></i></div>
+    <div class="cor-row" style="justify-content:space-between"><p class="cor-help" style="margin:0">HubSpot matched 4,184 of 5,948 leads (70%) to an ad. The other 1,764 came from organic search, email or direct visits and aren't in these numbers.</p><a class="cor-link" href="#">Attribution settings →</a></div>
+  </section></div><div class="span-3"><section class="cor-bay">
+    <div class="cor-bay__head cor-readout__head"><span class="cor-readout__name"><span class="cor-tag">Ad spend</span></span><span class="cor-tag">CH·ALL</span></div>
+    <div class="cor-readout__value">$48,210</div>
+    <span class="cor-slope cor-slope--flat"><svg viewBox="0 0 18 12"><path d="M1 10 L17 4"/></svg>+12.4% <span>vs prev 30d</span></span>
+    <div class="cor-range" aria-label="90-day range $38.9k to $51.7k"><i class="cor-range__prev" style="left:31.1%"></i><i class="cor-range__now" style="left:72.7%"></i><span class="cor-range__ends"><span>$38.9k</span><span>90-day range</span><span>$51.7k</span></span></div>
+  </section></div><div class="span-3"><section class="cor-bay">
+    <div class="cor-bay__head cor-readout__head"><span class="cor-readout__name"><span class="cor-tag">Leads</span><span class="cor-badge cor-badge--muted">HubSpot</span></span><span class="cor-tag">CH·ALL</span></div>
+    <div class="cor-readout__value">4,184</div>
+    <span class="cor-slope cor-slope--good"><svg viewBox="0 0 18 12"><path d="M1 10 L17 3"/></svg>+9.8% <span>vs prev 30d</span></span>
+    <div class="cor-range" aria-label="90-day range 3,310 to 4,420"><i class="cor-range__prev" style="left:40%"></i><i class="cor-range__now" style="left:81%"></i><span class="cor-range__ends"><span>3,310</span><span>90-day range</span><span>4,420</span></span></div>
+  </section></div><div class="span-3"><section class="cor-bay">
+    <div class="cor-bay__head cor-readout__head"><span class="cor-readout__name"><span class="cor-tag">Cost per lead</span><span class="cor-badge cor-badge--muted">HubSpot</span></span><span class="cor-tag">CH·ALL</span></div>
+    <div class="cor-readout__value">$11<small>.52</small></div>
+    <span class="cor-slope cor-slope--good"><svg viewBox="0 0 18 12"><path d="M1 3 L17 9"/></svg>−$0.84 <span>vs prev 30d</span></span>
+    <div class="cor-range" aria-label="90-day range $10.20 to $14.90"><i class="cor-range__prev" style="left:58%"></i><i class="cor-range__now" style="left:30%"></i><span class="cor-range__ends"><span>$10.20</span><span>90-day range</span><span>$14.90</span></span></div>
+  </section></div><div class="span-3"><section class="cor-bay">
+    <div class="cor-bay__head cor-readout__head"><span class="cor-readout__name"><span class="cor-tag">ROAS</span><span class="cor-badge cor-badge--muted">HubSpot</span></span><span class="cor-tag">CH·ALL</span></div>
+    <div class="cor-readout__value">2.9<small>×</small></div>
+    <span class="cor-slope cor-slope--good"><svg viewBox="0 0 18 12"><path d="M1 10 L17 4"/></svg>+0.3 <span>vs prev 30d</span></span>
+    <div class="cor-range" aria-label="90-day range 2.2× to 3.3×"><i class="cor-range__prev" style="left:35%"></i><i class="cor-range__now" style="left:70%"></i><span class="cor-range__ends"><span>2.2×</span><span>90-day range</span><span>3.3×</span></span></div>
+  </section></div>
+        <div class="span-12"><section class="cor-bay">
+    <div class="cor-bay__head">
+      <h3 class="cor-bay__title">Spend by channel</h3>
+      <span class="cor-tag">Weekly · last 8 weeks · CH·01–03</span>
+    </div>
+    <svg class="cor-trace" viewBox="0 0 640 200" role="img" aria-label="Weekly spend by channel. Google Ads rose from $1,800 to $3,050; Meta Ads to $1,700; LinkedIn Ads to $1,100 and is 6 hours stale.">
+      <line class="grid" x1="40" x2="520" y1="170" y2="170"/>
+      <line class="grid" x1="40" x2="520" y1="123.3" y2="123.3"/>
+      <line class="grid" x1="40" x2="520" y1="76.7" y2="76.7"/>
+      <line class="grid" x1="40" x2="520" y1="30" y2="30"/>
+      <text class="tick" x="32" y="174" text-anchor="end">$0</text>
+      <text class="tick" x="32" y="127" text-anchor="end">$1k</text>
+      <text class="tick" x="32" y="80" text-anchor="end">$2k</text>
+      <text class="tick" x="32" y="34" text-anchor="end">$3k</text>
+      <line class="mark" x1="40" x2="40" y1="170" y2="175"/><line class="mark" x1="108.6" x2="108.6" y1="170" y2="175"/><line class="mark" x1="177.1" x2="177.1" y1="170" y2="175"/><line class="mark" x1="245.7" x2="245.7" y1="170" y2="175"/><line class="mark" x1="314.3" x2="314.3" y1="170" y2="175"/><line class="mark" x1="382.9" x2="382.9" y1="170" y2="175"/><line class="mark" x1="451.4" x2="451.4" y1="170" y2="175"/><line class="mark" x1="520" x2="520" y1="170" y2="175"/>
+      <text class="tick" x="40" y="190" text-anchor="middle">JAN 6</text>
+      <text class="tick" x="177.1" y="190" text-anchor="middle">JAN 20</text>
+      <text class="tick" x="314.3" y="190" text-anchor="middle">FEB 3</text>
+      <text class="tick" x="451.4" y="190" text-anchor="middle">FEB 17</text>
+      <line x1="245.7" x2="245.7" y1="12" y2="170" style="stroke:var(--flare)" stroke-width="1" stroke-dasharray="2 3"/>
+      <path class="flag" d="M245.7 4 h8 l-4 6 l4 6 h-8 z"/>
+      <text class="flag-text" x="258" y="13.5">SPRING SALE</text>
+      <polyline points="40,142 108.6,137.3 177.1,139.7 245.7,128 314.3,130.3 382.9,123.3 451.4,125.7 520,118.7" fill="none" style="stroke:var(--ch-3)" stroke-width="2" stroke-dasharray="1 4" stroke-linecap="round"/>
+      <polyline points="40,114 108.6,116.3 177.1,109.3 245.7,111.7 314.3,100 382.9,102.3 451.4,95.3 520,90.7" fill="none" style="stroke:var(--ch-2)" stroke-width="2"/>
+      <polyline points="40,86 108.6,72 177.1,79 245.7,58 314.3,48.7 382.9,53.3 451.4,34.7 520,27.7" fill="none" style="stroke:var(--ch-1)" stroke-width="2.5"/>
+      <circle cx="520" cy="27.7" r="3.5" style="fill:var(--ch-1)"/>
+      <circle cx="520" cy="90.7" r="3" style="fill:var(--ch-2)"/>
+      <circle cx="520" cy="118.7" r="3" style="fill:var(--ch-3)"/>
+      <text class="lbl" x="530" y="26" style="fill:var(--ch-1)">Google Ads</text><text class="val" x="530" y="40">$3,050</text>
+      <text class="lbl" x="530" y="89" style="fill:var(--ch-2)">Meta Ads</text><text class="val" x="530" y="103">$1,700</text>
+      <text class="lbl" x="530" y="122" style="fill:var(--ch-3)">LinkedIn Ads</text><text class="val" x="530" y="136">$1,100 · <tspan style="fill:var(--caution)">6H</tspan></text>
+      <line class="cross" x1="314.3" x2="314.3" y1="30" y2="170"/>
+      <circle cx="314.3" cy="48.7" r="3" style="fill:var(--bg);stroke:var(--ch-1)" stroke-width="2"/>
+      <circle cx="314.3" cy="100" r="3" style="fill:var(--bg);stroke:var(--ch-2)" stroke-width="2"/>
+      <circle cx="314.3" cy="130.3" r="3" style="fill:var(--bg);stroke:var(--ch-3)" stroke-width="2"/>
+      <rect class="tip" x="322" y="140" width="112" height="26" rx="4"/>
+      <text class="tip-text" x="330" y="157">FEB 3 · $4,950</text>
+    </svg>
+  </section></div>
+        <div class="span-6"><section class="cor-bay">
+    <div class="cor-bay__head">
+      <h3 class="cor-bay__title">Return ledger</h3>
+      <span class="cor-tag">Mar 1 → Mar 30 · HubSpot closed-won revenue</span>
+    </div>
+    <div class="cor-ledger" role="table" aria-label="Spend and attributed revenue by channel">
+      <span></span><span class="cor-tag" style="text-align:right;padding-right:var(--space-2)">← Spent</span><span class="cor-tag" style="padding-left:var(--space-2)">Returned →</span><span class="cor-tag" style="text-align:right">ROAS</span>
+
+      <span class="cor-ledger__name"><i style="background:var(--ch-1)"></i>Google Ads</span>
+      <span class="cor-ledger__spend" style="--w:53.5%"><b></b><em>$21.4k</em></span>
+      <span class="cor-ledger__ret" style="--w:96.3%"><b style="background:var(--ch-1)"></b><em class="in">$96.3k</em></span>
+      <span class="cor-ledger__roas" style="color:var(--positive)">4.5×</span>
+
+      <span class="cor-ledger__name"><i style="background:var(--ch-2)"></i>Meta Ads</span>
+      <span class="cor-ledger__spend" style="--w:37.3%"><b></b><em>$14.9k</em></span>
+      <span class="cor-ledger__ret" style="--w:52.2%"><b style="background:var(--ch-2)"></b><em>$52.2k</em></span>
+      <span class="cor-ledger__roas">3.5×</span>
+
+      <span class="cor-ledger__name"><i style="background:var(--ch-3)"></i>LinkedIn Ads</span>
+      <span class="cor-ledger__spend" style="--w:21.5%"><b></b><em>$8.6k</em></span>
+      <span class="cor-ledger__ret" style="--w:19.8%"><b style="background:var(--ch-3)"></b><em>$19.8k</em></span>
+      <span class="cor-ledger__roas">2.3×</span>
+
+      <span class="cor-ledger__name"><i style="background:var(--ch-4)"></i>TikTok Ads</span>
+      <span class="cor-ledger__spend" style="--w:8.3%"><b></b><em>$3.3k</em></span>
+      <span class="cor-ledger__ret" style="--w:7.9%"><b style="background:var(--ch-4)"></b><em>$7.9k</em></span>
+      <span class="cor-ledger__roas">2.4×</span>
+    </div>
+    <span class="cor-tag">Total · spent $48.2k · returned $176.2k · 3.7×</span>
+  </section></div>
+        <div class="span-6"><section class="cor-bay" style="max-width:560px">
+    <div class="cor-bay__head"><h3 class="cor-bay__title">Share of spend</h3><span class="cor-tag">Mar 1 → Mar 30</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:var(--space-8);align-items:center">
+      <svg class="cor-ring" viewBox="0 0 120 120" role="img" aria-label="Share of spend: Google Ads 44%, Meta Ads 31%, LinkedIn Ads 18%, TikTok Ads 7%.">
+        <g transform="rotate(-90 60 60)" fill="none" stroke-width="12">
+          <circle cx="60" cy="60" r="40" style="stroke:var(--ch-1)" stroke-dasharray="109.6 251.3" stroke-dashoffset="0"/>
+          <circle cx="60" cy="60" r="40" style="stroke:var(--ch-2)" stroke-dasharray="75.7 251.3" stroke-dashoffset="-111.6"/>
+          <circle cx="60" cy="60" r="40" style="stroke:var(--ch-3)" stroke-dasharray="43 251.3" stroke-dashoffset="-189.3"/>
+          <circle cx="60" cy="60" r="40" style="stroke:var(--ch-4)" stroke-dasharray="15.1 251.3" stroke-dashoffset="-234.3"/>
+        </g>
+        <text class="cor-ring__center" x="60" y="61" text-anchor="middle">$48.2k</text><text class="cor-ring__sub" x="60" y="72" text-anchor="middle">TOTAL SPEND</text>
+      </svg>
+      <div class="cor-keylist" style="flex:1;min-width:220px">
+        <div><i style="background:var(--ch-1)"></i>Google Ads<span class="cor-num">$21.4k</span><span class="cor-num" style="color:var(--ink)">44%</span></div>
+        <div><i style="background:var(--ch-2)"></i>Meta Ads<span class="cor-num">$14.9k</span><span class="cor-num" style="color:var(--ink)">31%</span></div>
+        <div><i style="background:var(--ch-3)"></i>LinkedIn Ads<span class="cor-num">$8.6k</span><span class="cor-num" style="color:var(--ink)">18%</span></div>
+        <div><i style="background:var(--ch-4)"></i>TikTok Ads<span class="cor-num">$3.3k</span><span class="cor-num" style="color:var(--ink)">7%</span></div>
+      </div>
+    </div>
+  </section></div>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

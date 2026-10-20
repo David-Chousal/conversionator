@@ -1,0 +1,52 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>COR</title>
+<style>
+  html, body { margin:0; height:100%; }
+  body { background:var(--bg); color:var(--ink); font-family:var(--font-sans); overflow:hidden; }
+  .cover { position:relative; height:288px; overflow:hidden; }
+  .art { position:absolute; top:0; left:480px; width:480px; height:288px; overflow:hidden; }
+  .art svg { display:block; width:480px; height:288px; }
+  .tint { fill:var(--cobalt-soft); }
+  .teal { fill:var(--ch-2); }
+  .cobalt { fill:var(--cobalt); }
+  .deep { fill:var(--ink); }
+  .flare { fill:var(--flare); }
+  .blk { rx:var(--radius-sm); }
+  .hatch { stroke:var(--ink-muted); stroke-width:1; }
+  .words { position:absolute; left:var(--space-6); bottom:var(--space-6); max-width:440px; }
+  .name { margin:0; font-family:var(--font-sans); font-size:120px; line-height:.9; font-weight:700; letter-spacing:-.04em; color:var(--ink); }
+  .tag { margin:var(--space-2) 0 0 4px; font:500 12px/16px var(--font-mono); letter-spacing:.06em; text-transform:uppercase; color:var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="cover">
+<div class="art" aria-hidden="true">
+<svg viewBox="0 0 480 288" width="480" height="288">
+<!--
+  blocks      cobalt-soft 80×96, ch-2 80×160, cobalt 96×240 rising off the bottom; ink 144×304 bled off top and right; flare 32×32 flag
+  arrangement four ascending bars: the SignalMeter at poster scale, full signal, with a flare annotation flag over the weakest bar
+  pattern     the system's own hatch (muted channel, money spent) at an 8px pitch inside the cobalt-soft bar
+  scales      space-4 (16) gaps, radius-sm (2) on every block, hatch pitch space-2 (8)
+-->
+<defs><clipPath id="t"><rect x="32" y="200" width="80" height="96"/></clipPath></defs>
+<rect class="tint blk" x="32" y="200" width="80" height="96"/>
+<g clip-path="url(#t)">
+<line class="hatch" x1="32" y1="216" x2="48" y2="200"/><line class="hatch" x1="32" y1="224" x2="56" y2="200"/><line class="hatch" x1="32" y1="232" x2="64" y2="200"/><line class="hatch" x1="32" y1="240" x2="72" y2="200"/><line class="hatch" x1="32" y1="248" x2="80" y2="200"/><line class="hatch" x1="32" y1="256" x2="88" y2="200"/><line class="hatch" x1="32" y1="264" x2="96" y2="200"/><line class="hatch" x1="32" y1="272" x2="104" y2="200"/><line class="hatch" x1="32" y1="280" x2="112" y2="200"/><line class="hatch" x1="32" y1="288" x2="120" y2="200"/><line class="hatch" x1="40" y1="288" x2="128" y2="200"/><line class="hatch" x1="56" y1="288" x2="144" y2="200"/><line class="hatch" x1="72" y1="288" x2="160" y2="200"/><line class="hatch" x1="88" y1="288" x2="176" y2="200"/>
+</g>
+<rect class="flare blk" x="32" y="152" width="32" height="32"/>
+<rect class="teal blk" x="128" y="136" width="80" height="160"/>
+<rect class="cobalt blk" x="224" y="56" width="96" height="240"/>
+<rect class="deep blk" x="336" y="-8" width="152" height="304"/>
+</svg>
+</div>
+<div class="words">
+<h1 class="name">COR</h1>
+<p class="tag">Every channel · one board</p>
+</div>
+</div>
+</body>
+</html>

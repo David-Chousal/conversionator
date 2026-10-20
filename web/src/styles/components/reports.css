@@ -1,0 +1,74 @@
+/* ───── Reports: paper preview ───── */
+.cor-paper { box-sizing: border-box; display: grid; align-content: start; gap: var(--space-3); aspect-ratio: 1 / 1.294; max-width: 100%; padding: var(--space-6); border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow-pop); }
+.cor-step { display: grid; gap: var(--space-2); }
+
+/* The paper always shows the light theme, because that's what the PDF looks like. */
+.cor-paper[data-theme="light"] { color-scheme: light; --surface: #ffffff; --surface-sunken: #f6f8f8; --line: #d9e0e1; --line-strong: #828f95; --ink: #11181b; --ink-muted: #56636a; --rail: #11181b; --positive: #16794a; --negative: #b8361f; color: var(--ink); background: var(--surface); }
+
+/* Composer: steps on the left, the paper on the right. */
+.cor-composer { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 500px); gap: var(--space-8); align-items: start; }
+.cor-composer__form { display: grid; gap: var(--space-6); align-content: start; }
+.cor-composer__steps { display: grid; gap: var(--space-6); min-width: 0; margin: 0; padding: 0; border: 0; }
+.cor-report-step { min-width: 0; margin: 0; padding: 0; border: 0; }
+.cor-report-step legend { margin-bottom: var(--space-2); padding: 0; }
+.cor-report-checks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3) var(--space-4); }
+.cor-report-dates { display: grid; grid-template-columns: repeat(2, minmax(0, 180px)); gap: var(--space-4); }
+.cor-composer__keys { gap: var(--space-2); flex-wrap: wrap; }
+.cor-seg--radio label { display: inline-flex; align-items: center; height: 32px; padding: 0 var(--space-3) 2px; color: var(--ink-muted); font: 500 13px/1 var(--font-sans); cursor: pointer; }
+.cor-seg--radio label + label { border-left: 1px solid var(--line); }
+.cor-seg--radio label:has(input:checked) { color: var(--ink); background: var(--cobalt-soft); box-shadow: inset 0 2px 0 var(--cobalt); }
+.cor-seg--radio label:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: -2px; }
+fieldset:disabled .cor-seg--radio label { cursor: default; opacity: .6; }
+
+/* Paper preview: a scaled-down letter page. */
+.cor-report-preview { position: sticky; top: var(--space-6); display: grid; gap: var(--space-2); }
+.cor-report-preview[aria-busy="true"] .cor-paper { opacity: .6; transition: opacity 120ms ease-out; }
+.cor-paper--report { display: flex; flex-direction: column; gap: var(--space-2); overflow: hidden; padding: var(--space-6) var(--space-6) var(--space-4); font: 400 10px/14px var(--font-sans); }
+.cor-paper__brand { color: var(--ink-muted); font: 500 8px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
+.cor-paper__title { margin: 4px 0 0; font: 700 20px/24px var(--font-sans); letter-spacing: -.02em; }
+.cor-paper__meta { font-size: 10px; }
+.cor-paper__meta--muted { color: var(--ink-muted); font-size: 9px; }
+.cor-paper__summary { display: grid; gap: var(--space-2); margin: var(--space-2) 0 0; padding-top: var(--space-2); border-top: 2px solid var(--rail); }
+.cor-paper__summary div { min-width: 0; }
+.cor-paper__summary dt { color: var(--ink-muted); font: 500 7px/10px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; }
+.cor-paper__summary dd { margin: 2px 0 0; font: 700 15px/18px var(--font-sans); }
+.cor-paper__summary .cor-paper__change { color: var(--ink-muted); font: 400 8px/10px var(--font-mono); }
+.cor-paper__change--good { color: var(--positive) !important; }
+.cor-paper__change--bad { color: var(--negative) !important; }
+.cor-paper__section { display: grid; gap: 4px; margin-top: var(--space-2); padding-top: var(--space-2); border-top: 2px solid var(--rail); }
+.cor-paper__heading { font: 700 11px/14px var(--font-sans); }
+.cor-paper__table { width: 100%; table-layout: fixed; border-collapse: collapse; font: 400 9px/12px var(--font-sans); }
+.cor-paper__table th, .cor-paper__table td { padding: 3px 0; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cor-paper__table thead th { color: var(--ink-muted); font: 500 7px/10px var(--font-mono); letter-spacing: .04em; text-transform: uppercase; }
+.cor-paper__table th:first-child { width: 40%; text-align: left; font-weight: 400; }
+.cor-paper__table tbody th span { color: var(--ink-muted); }
+.cor-paper__total th, .cor-paper__total td { font-weight: 700 !important; }
+.cor-paper__empty { margin: auto 0; color: var(--ink-muted); font: 400 12px/18px var(--font-sans); text-align: center; }
+.cor-paper__foot { margin-top: auto; color: var(--ink-muted); font: 400 7px/10px var(--font-mono); }
+
+/* Report list: name flexes, everything else is a fixed column. */
+.cor-report-table { table-layout: fixed; }
+.cor-report-table__schedule { width: 220px; }
+.cor-report-table__format { width: 80px; }
+.cor-report-table__owner { width: 112px; }
+.cor-report-table__actions { width: 140px; }
+.cor-report-table__name { color: var(--ink); text-decoration: none; }
+.cor-report-table__name:hover { text-decoration: underline; }
+.cor-report-table__when { display: grid; justify-items: start; gap: 4px; }
+.cor-report-table td:first-child .cor-list__main > span { white-space: normal; }
+
+@media (max-width: 1099px) {
+  .cor-composer { grid-template-columns: minmax(0, 1fr); }
+  .cor-report-preview { position: static; max-width: 520px; }
+}
+@media (max-width: 767px) {
+  .cor-report-checks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cor-report-table, .cor-report-table tbody { display: block; }
+  .cor-report-table colgroup, .cor-report-table thead { display: none; }
+  .cor-report-table tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name name" "sched act" "meta meta"; gap: var(--space-2); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
+  .cor-report-table td { border: 0; padding: 0; }
+  .cor-report-table td:nth-child(1) { grid-area: name; }
+  .cor-report-table td:nth-child(2) { grid-area: sched; }
+  .cor-report-table td:nth-child(3), .cor-report-table td:nth-child(4) { display: none; }
+  .cor-report-table td:nth-child(5) { grid-area: act; }
+}

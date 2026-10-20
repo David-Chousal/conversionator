@@ -1,0 +1,26 @@
+/* Channel mixer: proportional spend strip + channel toggles + date scrubber */
+.cor-scrub { display: block; width: 100%; height: 48px; }
+.cor-scrub .area { fill: var(--line); }
+.cor-scrub .win { fill: var(--cobalt-soft); }
+.cor-scrub .win-line { fill: var(--cobalt); }
+.cor-scrub .handle { fill: var(--cobalt); }
+.cor-strip { display: flex; gap: 2px; height: 10px; }
+.cor-strip i { display: block; height: 100%; }
+.cor-strip i.muted { background: repeating-linear-gradient(135deg, var(--line-strong) 0 1px, transparent 1px 4px) !important; }
+.cor-toggles { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); }
+.cor-toggle { display: inline-flex; align-items: center; gap: var(--space-2); background: none; border: 0; padding: 4px 0; color: var(--ink); font: 500 14px/1 var(--font-sans); cursor: pointer; }
+.cor-toggle .box { width: 12px; height: 12px; border-radius: var(--radius-sm); }
+.cor-toggle[aria-pressed="false"] { color: var(--ink-muted); }
+.cor-toggle[aria-pressed="false"] .box { background: none !important; box-shadow: inset 0 0 0 1.5px var(--line-strong); }
+.cor-toggle .cor-tag { color: var(--ink-muted); }
+.cor-toggle:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+.cor-field { display: inline-flex; align-items: center; gap: var(--space-3); height: 32px; padding: 0 var(--space-3); border-bottom: 1px solid var(--line-strong); font: 500 14px/1 var(--font-sans); background: none; border-top: 0; border-left: 0; border-right: 0; color: var(--ink); cursor: pointer; }
+.cor-scrub-track { position: relative; height: 48px; touch-action: none; user-select: none; }
+.cor-scrub-track .cor-scrub { position: absolute; inset: 0; }
+.cor-scrub__body { position: absolute; top: 0; bottom: 0; cursor: grab; }
+.cor-scrub__body:active { cursor: grabbing; }
+.cor-scrub__handle { position: absolute; top: 0; bottom: 0; width: 12px; margin-left: -6px; cursor: ew-resize; }
+.cor-scrub__handle::after { content: ""; position: absolute; top: 0; bottom: 0; left: 4px; width: 4px; background: var(--cobalt); }
+.cor-scrub__handle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.cor-mixer__campaign { width: auto; min-width: 200px; height: 32px; }
+.cor-toggle:disabled { cursor: not-allowed; }

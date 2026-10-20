@@ -1,0 +1,23 @@
+<!-- @dsCard group="Actions" height=150 subtitle="Console keys: primary, default, icon, small, disabled, hold-to-confirm, link" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Key — preview</title></head>
+<body>
+<div class="cor-pad" style="display:grid;gap:var(--space-4)">
+  <div class="cor-row">
+    <button class="cor-key cor-key--primary" type="button">Connect Google Ads <kbd>⏎</kbd></button>
+    <button class="cor-key" type="button"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 0 1-8.5 3.5 M3 8a5 5 0 0 1 8.5-3.5 M11.5 1.5v3h-3 M4.5 14.5v-3h3"/></svg>Sync now <kbd>S</kbd></button>
+    <button class="cor-key is-pressed" type="button" aria-pressed="true"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 2.5h11v11h-11z M2.5 6.5h11 M7 6.5v7"/></svg>Customize <kbd>E</kbd></button>
+    <button class="cor-key cor-key--hold" type="button" style="--held:45%"><span>Hold to disconnect</span></button>
+    <button class="cor-link" type="button">View rows behind this →</button>
+  </div>
+  <div class="cor-row">
+    <button class="cor-key cor-key--icon" type="button" aria-label="More actions"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h1 M7.5 8h1 M12 8h1"/></svg></button>
+    <button class="cor-key cor-key--sm" type="button"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8 M4.5 6.5L8 10l3.5-3.5 M2.5 13.5h11"/></svg>Export</button>
+    <button class="cor-key cor-key--sm cor-key--icon" type="button" aria-label="Close"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9 M12.5 3.5l-9 9"/></svg></button>
+    <button class="cor-key is-busy" type="button" aria-busy="true"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 0 1-8.5 3.5 M3 8a5 5 0 0 1 8.5-3.5 M11.5 1.5v3h-3 M4.5 14.5v-3h3"/></svg>Syncing…</button>
+    <button class="cor-key" type="button" disabled>Invite member</button>
+  </div>
+</div>
+</body>
+</html>

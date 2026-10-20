@@ -1,0 +1,9 @@
+/* ───── Choices ───── */
+.cor-check { display: inline-flex; align-items: center; gap: var(--space-2); font: 400 14px/1.3 var(--font-sans); cursor: pointer; }
+.cor-check input { appearance: none; margin: 0; width: 16px; height: 16px; flex: none; display: grid; place-content: center; border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; }
+.cor-check input[type="radio"] { border-radius: var(--radius-full); }
+.cor-check input:checked { border-color: var(--cobalt); background: var(--cobalt); }
+.cor-check input[type="checkbox"]:checked::after { content: ""; width: 8px; height: 4px; border: solid var(--on-cobalt); border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg); }
+.cor-check input[type="radio"]:checked { background: var(--surface); box-shadow: inset 0 0 0 3px var(--surface), inset 0 0 0 8px var(--cobalt); }
+.cor-check input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.cor-check input:disabled + span { color: var(--ink-muted); }

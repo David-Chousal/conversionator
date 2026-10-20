@@ -1,0 +1,15 @@
+/* ───── Menu & tooltip ───── */
+.cor-menu { box-sizing: border-box; display: grid; min-width: 220px; padding: var(--space-1); border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--shadow-pop); }
+.cor-menu__item { display: flex; align-items: center; gap: var(--space-2); height: 32px; padding: 0 var(--space-2); border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink); font: 400 14px/1 var(--font-sans); text-align: left; text-decoration: none; cursor: pointer; }
+.cor-menu__item:hover, .cor-menu__item.is-active { background: var(--surface-sunken); }
+.cor-menu__item > .cor-ico { color: var(--ink-muted); }
+.cor-menu__item[aria-checked="true"] > .cor-ico { color: var(--cobalt); }
+.cor-menu__item[aria-checked="false"] > .cor-ico { visibility: hidden; }
+.cor-menu__item kbd, .cor-menu__meta { margin-left: auto; font: 400 11px/1 var(--font-mono); color: var(--ink-muted); }
+.cor-menu__item--danger { color: var(--negative); }
+.cor-menu__item--danger > .cor-ico { color: var(--negative); }
+.cor-menu__sep { height: 1px; margin: var(--space-1) 0; background: var(--line); }
+.cor-menu__head { padding: var(--space-2) var(--space-2) var(--space-1); }
+.cor-tip { display: inline-block; max-width: 240px; padding: 5px 8px; border-radius: var(--radius-sm); background: var(--ink); color: var(--bg); font: 400 12px/16px var(--font-mono); }
+.cor-menu-anchor { position: relative; display: inline-flex; }
+.cor-menu--floating { position: absolute; top: calc(100% + 4px); right: 0; z-index: var(--z-menu); }

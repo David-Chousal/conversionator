@@ -1,0 +1,8 @@
+/* ───── Alerts: sentence builder ───── */
+.cor-sentence { margin: 0; color: var(--ink); font: 400 18px/44px var(--font-sans); }
+.cor-slot { display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0 8px; border: 0; border-bottom: 2px solid var(--cobalt); border-radius: var(--radius-sm) var(--radius-sm) 0 0; background: var(--cobalt-soft); color: var(--ink); font: 500 16px/1 var(--font-sans); vertical-align: baseline; cursor: pointer; }
+.cor-slot .cor-ico { color: var(--ink-muted); }
+.cor-slot--num { font: 500 15px/1 var(--font-mono); }
+.cor-slot--empty { border-bottom-style: dashed; border-bottom-color: var(--line-strong); background: none; color: var(--ink-muted); font-weight: 400; }
+.cor-slot--invalid { border-bottom-color: var(--negative); background: var(--negative-soft); }
+.cor-slot:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

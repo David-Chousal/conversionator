@@ -1,0 +1,36 @@
+<!-- @dsCard group="Inputs" height=230 subtitle="Date scrubber, spend strip and channel toggles" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>ChannelMixer — preview</title></head>
+<body>
+<div class="cor-pad">
+  <section class="cor-bay" aria-label="Dashboard filters">
+    <div class="cor-bay__head">
+      <span class="cor-tag">Window · Mar 1 → Mar 30 · 30 days</span>
+      <button class="cor-field" type="button"><span class="cor-tag">Campaign</span>All campaigns ▾</button>
+    </div>
+    <div>
+      <svg class="cor-scrub" viewBox="0 0 600 48" preserveAspectRatio="none" aria-label="Daily spend, last 60 days, with the last 30 selected">
+        <rect class="win" x="300" y="0" width="300" height="48"/>
+        <path class="area" d="M0,48 L0,30 L50,26 L100,28 L150,22 L200,25 L250,20 L300,24 L350,18 L400,21 L450,15 L500,17 L550,12 L600,10 L600,48 Z"/>
+        <rect class="win-line" x="300" y="46" width="300" height="2"/>
+        <rect class="handle" x="298" y="0" width="4" height="48"/>
+        <rect class="handle" x="596" y="0" width="4" height="48"/>
+      </svg>
+      <div style="display:flex;justify-content:space-between" class="cor-tag"><span>Jan 30</span><span>Mar 1</span><span>Mar 30</span></div>
+    </div>
+    <div style="display:grid;gap:var(--space-3)">
+      <div class="cor-strip" aria-hidden="true">
+        <i style="flex:44.4;background:var(--ch-1)"></i><i style="flex:30.9;background:var(--ch-2)"></i><i class="muted" style="flex:17.9"></i><i style="flex:6.8;background:var(--ch-4)"></i>
+      </div>
+      <div class="cor-toggles">
+        <button class="cor-toggle" type="button" aria-pressed="true"><span class="box" style="background:var(--ch-1)"></span><span class="cor-tag">CH·01</span>Google Ads <span class="cor-num">44%</span></button>
+        <button class="cor-toggle" type="button" aria-pressed="true"><span class="box" style="background:var(--ch-2)"></span><span class="cor-tag">CH·02</span>Meta Ads <span class="cor-num">31%</span></button>
+        <button class="cor-toggle" type="button" aria-pressed="false"><span class="box" style="background:var(--ch-3)"></span><span class="cor-tag">CH·03</span>LinkedIn Ads <span class="cor-num">18%</span></button>
+        <button class="cor-toggle" type="button" aria-pressed="true"><span class="box" style="background:var(--ch-4)"></span><span class="cor-tag">CH·04</span>TikTok Ads <span class="cor-num">7%</span></button>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

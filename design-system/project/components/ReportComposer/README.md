@@ -1,0 +1,15 @@
+# ReportComposer
+
+The report composer builds one report from several channels, previews it live, and exports it now or emails it on a schedule.
+
+- Routes: `/reports/new` and `/reports/{id}`, full page. Left: Report name, then four numbered steps as fieldsets (the order is real): **1 · Metrics** (checkboxes in a 3-column grid, labelled by attribution source; Leads and Cost per lead disabled without a CRM), **2 · Channels** (connected channels with data), **3 · Window** (Last 7 / 30 / 90 days, Last month, Custom with From/To dates inside the 180-day history; "Compare with the previous period"), **4 · Deliver** (PDF/CSV and Once/Weekly/Monthly segmented radios, `cor-seg--radio`; recipients TokenInput when scheduled).
+- Right: a `cor-paper` letter page that the server rebuilds 350ms after any change, using the same content the PDF and CSV use, so the preview never disagrees with the file. It is forced to the light theme (`data-theme="light"` pins the light tokens on the paper). Header, summary figures with change, "By channel" with a Total row, top 8 campaigns, and a generated-on footer. Below 1100px the paper drops under the steps.
+- Validation: name (on save), at least one metric and channel, channels still connected, custom windows ordered, within history and not past today. Scheduled reports need a rolling window and 1–20 valid recipients; bad addresses stay as invalid tokens. A missing metric, channel or bad window replaces the paper with that message.
+- Schedules read "Weekly · Mondays 8:00" (the workspace week start) or "Monthly · 1st 8:00", in workspace time, with the first send date.
+- Export posts the current settings to `/reports/export`, which returns the file as a download named `{report}-{from}-to-{to}.{pdf|csv}`. CSV: one row per campaign, raw numbers (money and ratios to 2 decimals, counts whole), units in headers, a Total row, formula-safe cells. PDF: letter size, Helvetica, rails and rules like the app, top 25 campaigns, page numbers. While building, a tag reads "Building {report} · PDF…"; success toasts the filename; failure shows a `--failed` Banner with the server's reason and Retry, keeping every setting. An empty window disables Export and the paper says "No data for … Pick a wider window or more channels."
+- Anyone can create reports; only the owner or an admin can change or delete one. Others see the composer read-only with an `--info` Banner and can still export.
+- Radio groups take a per-instance name (`useId`): Next keeps hidden copies of past pages in the document, and a shared `name` lets a hidden copy steal the checked state.
+
+## Report list
+
+`/reports`: a `cor-report-table` with fixed columns: the name (link) with "4 metrics · Google Ads, Meta Ads · Last month" and any disconnected-channel warning; schedule badge (outlined with a calendar icon, "Monthly · 1st 8:00", or `--muted` "One-off"; never `--solid`, which reads as an alarm in a list) over "Next Nov 1 · 2 recipients"; format; owner; hold-to-delete for the owner or an admin. "New report" sits in the page header. Phones stack name over schedule and the key.

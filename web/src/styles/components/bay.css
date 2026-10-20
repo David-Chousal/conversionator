@@ -1,0 +1,8 @@
+/* Bay: an unboxed widget hung from a 2px rail */
+.cor-bay { border-top: 2px solid var(--rail); padding-top: var(--space-2); display: grid; gap: var(--space-4); min-width: 0; }
+.cor-bay__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+.cor-bay__title { margin: 0; font: 700 15px/20px var(--font-sans); letter-spacing: -.01em; }
+.cor-bay--drill { position: relative; }
+.cor-stretch { position: absolute; inset: 0; padding: 0; border: 0; background: none; cursor: pointer; }
+.cor-stretch:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+.cor-bay--drill:hover > .cor-bay__head .cor-tag:first-child, .cor-bay--drill:focus-within > .cor-bay__head .cor-tag:first-child { color: var(--cobalt); }

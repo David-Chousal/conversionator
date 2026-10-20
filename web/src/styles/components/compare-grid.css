@@ -1,0 +1,7 @@
+/* ───── Compare grid ───── */
+.cor-compare td .cell { display: grid; gap: 4px; justify-items: end; }
+.cor-compare td .bar { height: 4px; width: var(--w); background: var(--line-strong); }
+.cor-compare .is-best { font-weight: 500; color: var(--ink); }
+.cor-compare .is-best::before { content: "◆ "; color: var(--cobalt); }
+.cor-compare th .head { display: grid; gap: 4px; justify-items: end; text-transform: none; letter-spacing: 0; }
+.cor-compare th .head strong { font: 500 14px/18px var(--font-sans); color: var(--ink); }

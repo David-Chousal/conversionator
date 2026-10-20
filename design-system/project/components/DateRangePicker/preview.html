@@ -1,0 +1,25 @@
+<!-- @dsCard group="Inputs" height=400 subtitle="Presets, calendar range, compare toggle" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>DateRangePicker — preview</title></head>
+<body>
+<div class="cor-pad">
+  <div class="cor-cal" role="dialog" aria-label="Choose date range">
+    <div class="cor-cal__presets">
+      <button class="cor-menu__item" type="button">Today</button>
+      <button class="cor-menu__item" type="button">Last 7 days</button>
+      <button class="cor-menu__item is-active" type="button" aria-current="true">Last 30 days</button>
+      <button class="cor-menu__item" type="button">Last 90 days</button>
+      <button class="cor-menu__item" type="button">Quarter to date</button>
+      <button class="cor-menu__item" type="button">Year to date</button>
+      <button class="cor-menu__item" type="button">Custom</button>
+    </div>
+    <div class="cor-cal__main">
+      <div style="display:flex;justify-content:space-between;align-items:center"><button class="cor-key cor-key--sm cor-key--icon" type="button" aria-label="Previous month" style="transform:scaleX(-1)"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"/></svg></button><strong style="font:700 15px/20px var(--font-sans)">March 2026</strong><button class="cor-key cor-key--sm cor-key--icon" type="button" aria-label="Next month"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"/></svg></button></div>
+      <div class="cor-cal__grid"><span class="cor-tag">Mo</span><span class="cor-tag">Tu</span><span class="cor-tag">We</span><span class="cor-tag">Th</span><span class="cor-tag">Fr</span><span class="cor-tag">Sa</span><span class="cor-tag">Su</span><button type="button" class="out" tabindex="-1">23</button><button type="button" class="out" tabindex="-1">24</button><button type="button" class="out" tabindex="-1">25</button><button type="button" class="out" tabindex="-1">26</button><button type="button" class="out" tabindex="-1">27</button><button type="button" class="out" tabindex="-1">28</button><button type="button" class="edge" aria-pressed="true">1</button><button type="button" class="in">2</button><button type="button" class="in">3</button><button type="button" class="in">4</button><button type="button" class="in">5</button><button type="button" class="in">6</button><button type="button" class="in">7</button><button type="button" class="in">8</button><button type="button" class="in">9</button><button type="button" class="in">10</button><button type="button" class="in">11</button><button type="button" class="in">12</button><button type="button" class="in">13</button><button type="button" class="in">14</button><button type="button" class="in">15</button><button type="button" class="in">16</button><button type="button" class="in">17</button><button type="button" class="in">18</button><button type="button" class="in">19</button><button type="button" class="in">20</button><button type="button" class="in">21</button><button type="button" class="in">22</button><button type="button" class="in">23</button><button type="button" class="in">24</button><button type="button" class="in">25</button><button type="button" class="in">26</button><button type="button" class="in">27</button><button type="button" class="in">28</button><button type="button" class="in">29</button><button type="button" class="edge" aria-pressed="true">30</button><button type="button" class="today" aria-label="March 31, today">31</button><button type="button" class="out" tabindex="-1">1</button><button type="button" class="out" tabindex="-1">2</button><button type="button" class="out" tabindex="-1">3</button><button type="button" class="out" tabindex="-1">4</button><button type="button" class="out" tabindex="-1">5</button></div>
+      <div class="cor-cal__foot"><label class="cor-switch"><input type="checkbox" id="cmp" checked><span class="cor-switch__state">ON</span><span style="font-size:13px">Compare to Jan 30 → Feb 28</span></label><span class="cor-row" style="gap:var(--space-2)"><span class="cor-tag">Mar 1 → Mar 30 · 30d</span><button class="cor-key cor-key--primary cor-key--sm" type="button">Apply</button></span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

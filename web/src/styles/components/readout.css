@@ -1,0 +1,20 @@
+/* Readout: KPI with slope glyph and 90-day range track */
+.cor-readout__value { font: 700 44px/44px var(--font-sans); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.cor-readout__value small { font-size: 60%; font-weight: 500; color: var(--ink-muted); letter-spacing: -.01em; }
+.cor-slope { display: inline-flex; align-items: center; gap: 6px; font: 500 13px/18px var(--font-mono); font-variant-numeric: tabular-nums; }
+.cor-slope svg { width: 18px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: square; }
+.cor-slope--good { color: var(--positive); } .cor-slope--bad { color: var(--negative); } .cor-slope--flat { color: var(--ink); }
+.cor-slope span { color: var(--ink-muted); font-size: 12px; }
+.cor-range { position: relative; height: 26px; margin-top: var(--space-1); }
+.cor-range::before { content: ""; position: absolute; left: 0; right: 0; top: 5px; border-top: 1px solid var(--line-strong); }
+.cor-range::after { content: ""; position: absolute; left: 0; right: 0; top: 1px; height: 9px; border-left: 1px solid var(--line-strong); border-right: 1px solid var(--line-strong); }
+.cor-range__now, .cor-range__prev { position: absolute; top: 1px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: var(--radius-full); }
+.cor-range__now { background: var(--ink); }
+.cor-range__prev { box-shadow: inset 0 0 0 1.5px var(--ink-muted); background: var(--bg); }
+.cor-range__ends { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; font: 400 11px/1 var(--font-mono); color: var(--ink-muted); }
+/* Readout heads never wrap, so every tile's value starts on the same line. */
+.cor-readout__head { flex-wrap: nowrap; align-items: center; height: 20px; }
+.cor-readout__head > .cor-tag { flex: none; }
+.cor-readout__name { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.cor-readout__name > .cor-tag { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cor-readout__name > .cor-badge { flex: none; }

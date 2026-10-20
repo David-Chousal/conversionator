@@ -1,0 +1,23 @@
+<!-- @dsCard group="Inputs" height=300 subtitle="Closed field and its open menu" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Select — preview</title></head>
+<body>
+<div class="cor-pad" style="display:flex;flex-wrap:wrap;gap:var(--space-8);align-items:flex-start">
+  <div class="cor-fieldset" style="width:260px"><span class="cor-fieldset__label"><span class="cor-tag">Time zone</span></span>
+    <button class="cor-input cor-input--select" type="button" aria-haspopup="listbox">America/Los_Angeles · PT <svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button></div>
+  <div class="cor-fieldset" style="width:260px"><span class="cor-fieldset__label"><span class="cor-tag">Default date range</span></span>
+    <button class="cor-input cor-input--select" type="button" aria-haspopup="listbox" aria-expanded="true">Last 30 days <svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button>
+    <div class="cor-menu" role="listbox">
+      <div class="cor-menu__head cor-tag">Rolling</div>
+      <button class="cor-menu__item" role="option" aria-checked="false"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>Last 7 days</button>
+      <button class="cor-menu__item is-active" role="option" aria-checked="true"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>Last 30 days</button>
+      <button class="cor-menu__item" role="option" aria-checked="false"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>Last 90 days</button>
+      <div class="cor-menu__sep"></div>
+      <div class="cor-menu__head cor-tag">Calendar</div>
+      <button class="cor-menu__item" role="option" aria-checked="false"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>Quarter to date</button>
+      <button class="cor-menu__item" role="option" aria-checked="false"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>Year to date</button>
+    </div></div>
+</div>
+</body>
+</html>

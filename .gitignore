@@ -1,0 +1,6 @@
+# OS and local tooling
+.DS_Store
+.claude/
+
+# Course documents (kept locally, not published)
+*.pdf

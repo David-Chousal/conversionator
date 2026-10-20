@@ -1,0 +1,19 @@
+/* Key: a physical console key with a keybed edge and a shortcut */
+.cor-key { position: relative; display: inline-flex; white-space: nowrap; text-decoration: none; align-items: center; gap: var(--space-3); height: 34px; padding: 0 var(--space-2) 2px var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: 500 14px/1 var(--font-sans); cursor: pointer; box-shadow: inset 0 -3px 0 var(--line); transition: transform 80ms ease-out, box-shadow 80ms ease-out; }
+.cor-key:active, .cor-key.is-pressed { transform: translateY(1px); box-shadow: inset 0 -1px 0 var(--line); }
+.cor-key:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+.cor-key kbd { font: 500 11px/1 var(--font-mono); padding: 3px 5px; border-radius: var(--radius-sm); border: 1px solid var(--line); color: var(--ink-muted); }
+.cor-key--primary { background: var(--cobalt); border-color: var(--cobalt); color: var(--on-cobalt); box-shadow: inset 0 -3px 0 rgba(0,0,0,.28); }
+.cor-key--primary.is-pressed { box-shadow: inset 0 -1px 0 rgba(0,0,0,.28); }
+.cor-key--primary kbd { border-color: currentColor; color: inherit; opacity: .75; }
+.cor-key--hold { overflow: hidden; color: var(--negative); border-color: var(--negative); }
+.cor-key--hold::before { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--held, 0%); background: var(--negative-soft); z-index: 0; }
+.cor-key--hold > * { position: relative; z-index: 1; }
+.cor-link { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0; color: var(--cobalt); font: 500 14px/1 var(--font-sans); cursor: pointer; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
+.cor-link:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 3px; }
+/* ───── Key variants ───── */
+.cor-key--icon { width: 34px; padding: 0 0 2px; justify-content: center; }
+.cor-key--sm { height: 28px; padding: 0 var(--space-2) 2px; font-size: 13px; }
+.cor-key--sm.cor-key--icon { width: 28px; padding: 0 0 2px; }
+.cor-key:disabled { color: var(--ink-muted); background: var(--surface-sunken); border-color: var(--line); box-shadow: none; cursor: not-allowed; }
+.cor-key.is-busy { color: var(--ink-muted); cursor: progress; }

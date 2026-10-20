@@ -1,0 +1,20 @@
+/* Return ledger: spend left of the spine, return right, same dollar scale */
+.cor-ledger { display: grid; grid-template-columns: minmax(112px, auto) 1.6fr 4fr minmax(48px, auto); column-gap: 0; row-gap: var(--space-3); align-items: center; }
+.cor-ledger__head { display: contents; }
+.cor-ledger__name { display: flex; align-items: center; gap: var(--space-2); padding-right: var(--space-3); font: 500 14px/1 var(--font-sans); }
+.cor-ledger__name i { width: 8px; height: 8px; border-radius: var(--radius-sm); }
+.cor-ledger__spend, .cor-ledger__ret { position: relative; height: 18px; }
+.cor-ledger__spend { border-right: 2px solid var(--rail); }
+.cor-ledger__spend b, .cor-ledger__ret b { position: absolute; top: 0; bottom: 0; width: var(--w); }
+.cor-ledger__spend b { right: 0; background: repeating-linear-gradient(135deg, var(--ink-muted) 0 1px, transparent 1px 4px); box-shadow: inset 0 0 0 1px var(--ink-muted); }
+.cor-ledger__ret b { left: 0; }
+.cor-ledger__spend em, .cor-ledger__ret em { position: absolute; top: 1px; font: normal 400 12px/16px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-muted); white-space: nowrap; }
+.cor-ledger__spend em { right: calc(var(--w) + 6px); }
+.cor-ledger__ret em { left: calc(var(--w) + 6px); color: var(--ink); }
+.cor-ledger__ret em.in { left: auto; right: calc(100% - var(--w) + 6px); color: var(--on-cobalt); }
+.cor-ledger__roas { text-align: right; font: 500 13px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+.cor-ledger__axis { padding-top: var(--space-1); }
+.cor-ledger__roas.is-best { color: var(--positive); }
+.cor-ledger__drill { display: inline-flex; align-items: center; gap: var(--space-2); padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.cor-ledger__drill:hover { color: var(--cobalt); }
+.cor-ledger__drill:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

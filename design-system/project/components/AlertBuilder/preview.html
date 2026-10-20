@@ -1,0 +1,19 @@
+<!-- @dsCard group="Alerts" height=330 subtitle="Alert rules written as a sentence" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>AlertBuilder — preview</title></head>
+<body>
+<div class="cor-pad" style="display:grid;gap:var(--space-6)">
+  <section class="cor-bay" style="max-width:820px">
+    <div class="cor-bay__head"><h3 class="cor-bay__title">New alert</h3><span class="cor-tag">Checked every sync</span></div>
+    <p class="cor-sentence">When <button class="cor-slot" type="button" aria-haspopup="listbox">ROAS <svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button> on <button class="cor-slot" type="button" aria-haspopup="listbox"><span class="cor-mark cor-mark--sm">M</span>Meta Ads <svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button> <button class="cor-slot" type="button" aria-haspopup="listbox">drops below <svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button> <button class="cor-slot cor-slot--num cor-slot--invalid" type="button" aria-describedby="ab-err">0×</button> for <button class="cor-slot" type="button" aria-haspopup="listbox">1 day <svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button>, tell <button class="cor-slot cor-slot--empty" type="button" aria-haspopup="listbox">pick where <svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button>.</p>
+    <span class="cor-help cor-help--error" id="ab-err"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l6.5 12h-13z M8 6.5v3.5 M8 12v.5"/></svg>The threshold has to be above 0×. Most teams start at 2.5×.</span>
+    <div class="cor-row" style="gap:var(--space-2)"><button class="cor-key cor-key--primary" type="button" disabled>Save alert</button><button class="cor-key" type="button">Cancel</button><span class="cor-tag">Would have fired 3 times last month</span></div>
+  </section>
+  <div class="cor-list" style="--cols:72px minmax(0,1fr) 56px 28px;max-width:820px">
+    <div class="cor-list__row" style="--cols:72px minmax(0,1fr) 56px 28px"><label class="cor-switch"><input type="checkbox" id="al-1" checked><span class="cor-switch__state">ON</span></label><span class="cor-list__main"><strong>CPA on all channels rises above $25 for 2 days</strong><span>Email + Slack #growth · last fired Mar 12</span></span><button class="cor-key cor-key--sm" type="button">Edit</button><button class="cor-key cor-key--sm cor-key--icon" type="button" aria-label="Alert actions"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h1 M7.5 8h1 M12 8h1"/></svg></button></div>
+    <div class="cor-list__row" style="--cols:72px minmax(0,1fr) 56px 28px"><label class="cor-switch"><input type="checkbox" id="al-2"><span class="cor-switch__state">OFF</span></label><span class="cor-list__main"><strong style="color:var(--ink-muted)">Google Ads spend exceeds $1,500 in 1 day</strong><span>In-app · paused by Troy E. on Mar 20</span></span><button class="cor-key cor-key--sm" type="button">Edit</button><button class="cor-key cor-key--sm cor-key--icon" type="button" aria-label="Alert actions"><svg class="cor-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h1 M7.5 8h1 M12 8h1"/></svg></button></div>
+  </div>
+</div>
+</body>
+</html>

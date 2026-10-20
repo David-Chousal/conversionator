@@ -1,0 +1,142 @@
+/* Generated from design-system/project/tokens.json by `npm run tokens`. Do not edit by hand. */
+
+:root {
+  color-scheme: light;
+  --bg: #eef1f1;
+  --surface: #ffffff;
+  --surface-sunken: #f6f8f8;
+  --line: #d9e0e1;
+  --line-strong: #828f95;
+  --rail: var(--ink);
+  --ink: #11181b;
+  --ink-muted: #56636a;
+  --cobalt: #2a3fd6;
+  --cobalt-soft: #e6e9fc;
+  --on-cobalt: #ffffff;
+  --focus: var(--cobalt);
+  --flare: #e8772e;
+  --positive: #16794a;
+  --positive-soft: #e2f3ea;
+  --negative: #b8361f;
+  --negative-soft: #fbe7e2;
+  --caution: #8f5a00;
+  --caution-soft: #fbf0d9;
+  --scrim: rgba(12,17,20,0.48);
+  --ch-1: #2a3fd6;
+  --ch-2: #0d8478;
+  --ch-3: #e8772e;
+  --ch-4: #b8357a;
+  --ch-5: #6f8418;
+  --ch-6: #6a59b3;
+  --ch-other: var(--ink-muted);
+  --seq-0: #e3e7f8;
+  --seq-1: #b9c2f2;
+  --seq-2: #8292ea;
+  --seq-3: #4a5fdc;
+  --seq-4: #2236b8;
+  --shadow-pop: 0 8px 24px rgba(17,24,27,0.12);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-full: 999px;
+  --control-sm: 28px;
+  --control: 34px;
+  --control-touch: 44px;
+  --row: 40px;
+  --topbar: 56px;
+  --sidebar: 232px;
+  --drawer: 440px;
+  --dialog: 480px;
+  --icon: 16px;
+  --z-sticky: 10;
+  --z-drag: 20;
+  --z-drawer: 30;
+  --z-dialog: 40;
+  --z-menu: 50;
+  --z-toast: 60;
+  --z-tooltip: 70;
+  --font-sans: var(--font-sans-face), Satoshi, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-mono-face), "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0c1114;
+    --surface: #141b1f;
+    --surface-sunken: #0f1518;
+    --line: #26313a;
+    --line-strong: #5d6c74;
+    --rail: var(--ink);
+    --ink: #e4eaec;
+    --ink-muted: #93a2a9;
+    --cobalt: #8e9cff;
+    --cobalt-soft: #1d2550;
+    --on-cobalt: #0c1114;
+    --focus: var(--cobalt);
+    --flare: #f39a5a;
+    --positive: #4cc488;
+    --positive-soft: #123224;
+    --negative: #ff7d68;
+    --negative-soft: #3a1813;
+    --caution: #f0b44c;
+    --caution-soft: #33270f;
+    --scrim: rgba(0,0,0,0.64);
+    --ch-1: #8e9cff;
+    --ch-2: #3cc7b6;
+    --ch-3: #f39a5a;
+    --ch-4: #f07ab8;
+    --ch-5: #b5cc55;
+    --ch-6: #b4a6f2;
+    --ch-other: var(--ink-muted);
+    --seq-0: #18203a;
+    --seq-1: #243474;
+    --seq-2: #3a52b8;
+    --seq-3: #6b7ff0;
+    --seq-4: #a9b5ff;
+    --shadow-pop: 0 8px 24px rgba(0,0,0,0.5);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0c1114;
+  --surface: #141b1f;
+  --surface-sunken: #0f1518;
+  --line: #26313a;
+  --line-strong: #5d6c74;
+  --rail: var(--ink);
+  --ink: #e4eaec;
+  --ink-muted: #93a2a9;
+  --cobalt: #8e9cff;
+  --cobalt-soft: #1d2550;
+  --on-cobalt: #0c1114;
+  --focus: var(--cobalt);
+  --flare: #f39a5a;
+  --positive: #4cc488;
+  --positive-soft: #123224;
+  --negative: #ff7d68;
+  --negative-soft: #3a1813;
+  --caution: #f0b44c;
+  --caution-soft: #33270f;
+  --scrim: rgba(0,0,0,0.64);
+  --ch-1: #8e9cff;
+  --ch-2: #3cc7b6;
+  --ch-3: #f39a5a;
+  --ch-4: #f07ab8;
+  --ch-5: #b5cc55;
+  --ch-6: #b4a6f2;
+  --ch-other: var(--ink-muted);
+  --seq-0: #18203a;
+  --seq-1: #243474;
+  --seq-2: #3a52b8;
+  --seq-3: #6b7ff0;
+  --seq-4: #a9b5ff;
+  --shadow-pop: 0 8px 24px rgba(0,0,0,0.5);
+}
+

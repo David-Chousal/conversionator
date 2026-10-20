@@ -1,0 +1,10 @@
+/* Signal meter: sync freshness as signal bars + a word */
+.cor-signal { display: inline-flex; align-items: flex-end; gap: var(--space-2); font: 500 11px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; }
+.cor-signal__bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 13px; }
+.cor-signal__bars i { width: 3px; background: currentColor; }
+.cor-signal__bars i:nth-child(1) { height: 4px; } .cor-signal__bars i:nth-child(2) { height: 7px; }
+.cor-signal__bars i:nth-child(3) { height: 10px; } .cor-signal__bars i:nth-child(4) { height: 13px; }
+.cor-signal__bars i.off { background: none; box-shadow: inset 0 0 0 1px currentColor; opacity: .45; }
+.cor-signal--ok { color: var(--positive); } .cor-signal--stale { color: var(--caution); }
+.cor-signal--failed { color: var(--negative); } .cor-signal--off { color: var(--ink-muted); }
+.cor-signal b { font-weight: 500; color: var(--ink-muted); }
