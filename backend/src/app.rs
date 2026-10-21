@@ -1,0 +1,3 @@
+trait App {
+  fn run();
+}
