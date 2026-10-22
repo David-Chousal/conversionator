@@ -1,3 +1,3 @@
-trait App {
+pub trait App {
   fn run();
 }
