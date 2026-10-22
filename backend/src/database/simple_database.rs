@@ -7,20 +7,32 @@ use crate::{
 
 pub struct SimpleDatabase {
   db_file: File,
+  storage: SimpleDatabaseStorage,
+}
+
+#[derive(serde::Serialize)]
+struct SimpleDatabaseStorage {
   user_store: HashMap<u64, User>,
   team_store: HashMap<u64, Team>,
 }
 
-impl SimpleDatabase {
-  fn write_user_store(&self) {
-    // let buf = rmp_serde::encode::to_vec(&self.user_store).unwrap();
-    // self.db_file.lock();
-    // self.db_file.write(&buf);
-    todo!();
+impl SimpleDatabaseStorage {
+  pub fn is_empty(&self) -> bool {
+    self.user_store.is_empty() && self.team_store.is_empty()
   }
+}
 
+impl SimpleDatabase {
   fn sync_to_file(&self) {
-    todo!();
+    let buf = rmp_serde::encode::to_vec(&self.storage).unwrap(); // fix
+    self.db_file.lock().unwrap();
+    if let Ok(n) = (&self.db_file).write(&buf) {
+      if n != buf.len() {
+        todo!(); // TODO
+      }
+    };
+    self.db_file.unlock().unwrap();
+    todo!()
   }
 }
 
