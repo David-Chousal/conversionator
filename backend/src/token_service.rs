@@ -4,7 +4,7 @@ mod simple_token_service;
 
 pub use simple_token_service::SimpleTokenService;
 
-trait TokenService {
+pub trait TokenService {
   type Token;
 
   fn generate_token(&self, user: User) -> Self::Token;

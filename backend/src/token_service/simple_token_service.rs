@@ -23,7 +23,7 @@ pub struct SimpleTokenService {
 }
 
 impl SimpleTokenService {
-  fn get_default_instance() -> &'static Self {
+  pub fn get_default_instance() -> &'static Self {
     static INSTANCE: OnceLock<SimpleTokenService> = OnceLock::new();
     return INSTANCE.get_or_init(|| SimpleTokenService {
       default_lifetime: chrono::Duration::days(1),
