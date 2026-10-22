@@ -1,19 +1,21 @@
 use std::{
   collections::HashMap,
-  sync::{Arc, OnceLock, RwLock},
+  sync::{OnceLock, RwLock},
 };
 
 use crate::types::*;
 
+use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use chrono::Utc;
+use rand::RngCore;
 
 use crate::token_service::TokenService;
 
 #[derive(Clone)]
 pub struct Token {
-  token_string: String,
-  user_id: u64,
-  expires: chrono::DateTime<Utc>,
+  pub token_string: String,
+  pub user_id: u64,
+  pub expires: chrono::DateTime<Utc>,
 }
 
 pub struct SimpleTokenService {
@@ -31,12 +33,19 @@ impl SimpleTokenService {
     });
   }
 
+  fn generate_token_string() -> String {
+    let mut bytes = [0u8; 32];
+    rand::rng().fill_bytes(&mut bytes);
+    let token_string = URL_SAFE_NO_PAD.encode(bytes);
+    return token_string;
+  }
+
   fn generate_token_with_lifetime(
     &self,
     user: User,
     lifetime: chrono::Duration,
   ) -> <Self as TokenService>::Token {
-    let token_string = "foo".to_owned();
+    let token_string = Self::generate_token_string();
 
     let t: Token = Token {
       token_string: token_string.clone(),
