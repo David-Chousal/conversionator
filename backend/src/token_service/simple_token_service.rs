@@ -41,7 +41,7 @@ impl SimpleTokenService {
   }
 
   pub fn validate_token_string(token_str: &str) -> bool {
-    if token_str.len() != 44 {
+    if token_str.len() != 43 {
       return false;
     }
 
