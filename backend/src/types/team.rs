@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
-pub struct Team;
+#[derive(Clone, Serialize, Deserialize)]
+pub struct Team {
+  pub id: u64,
+}
