@@ -1,12 +1,13 @@
 use chrono::Utc;
+use serde::Serialize;
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Serialize)]
 pub enum UserRole {
   User = 0,
   Admin = 1,
 }
 
-#[derive(Hash)]
+#[derive(Hash, Serialize)]
 pub struct User {
   pub id: u64,
   pub username: String,
