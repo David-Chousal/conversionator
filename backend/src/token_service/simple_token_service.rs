@@ -109,11 +109,6 @@ mod tests {
   use super::*;
 
   #[test]
-  fn foo() {
-    assert!(true)
-  }
-
-  #[test]
   fn generate_token_string_works() {
     let s = SimpleTokenService::generate_token_string();
     assert!(SimpleTokenService::validate_token_string(&s));
