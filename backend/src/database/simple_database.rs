@@ -1,4 +1,8 @@
-use std::{collections::HashMap, fs::File, io::Write};
+use std::{
+  collections::HashMap,
+  fs::File,
+  io::{Read, Write},
+};
 
 use crate::{
   database::{UserRepository, team_repository::TeamRepository},
@@ -10,7 +14,7 @@ pub struct SimpleDatabase {
   storage: SimpleDatabaseStorage,
 }
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, serde::Deserialize)]
 struct SimpleDatabaseStorage {
   user_store: HashMap<u64, User>,
   team_store: HashMap<u64, Team>,
@@ -23,6 +27,17 @@ impl SimpleDatabaseStorage {
 }
 
 impl SimpleDatabase {
+  pub fn from_file(file: File) -> Self {
+    if let Ok(storage) = rmp_serde::from_read(&file) {
+      return SimpleDatabase {
+        db_file: file,
+        storage,
+      };
+    } else {
+      panic!("failed to read db file")
+    }
+  }
+
   fn sync_to_file(&self) {
     let buf = rmp_serde::encode::to_vec(&self.storage).unwrap(); // fix
     self.db_file.lock().unwrap();
@@ -30,6 +45,8 @@ impl SimpleDatabase {
       if n != buf.len() {
         todo!(); // TODO
       }
+    } else {
+      panic!("failed to write to db file");
     };
     self.db_file.unlock().unwrap();
     todo!()
