@@ -40,6 +40,18 @@ impl SimpleTokenService {
     return token_string;
   }
 
+  pub fn validate_token_string(token_str: &str) -> bool {
+    if token_str.len() != 44 {
+      return false;
+    }
+
+    if let Ok(bytes) = URL_SAFE_NO_PAD.decode(token_str) {
+      return bytes.len() == 32;
+    }
+
+    return false;
+  }
+
   fn generate_token_with_lifetime(
     &self,
     user: User,
@@ -80,10 +92,14 @@ impl TokenService for SimpleTokenService {
   }
 
   fn verify_token(&self, token_str: &str) -> bool {
-    return self.active_tokens.read().unwrap().contains_key(token_str);
+    return Self::validate_token_string(token_str)
+      && self.active_tokens.read().unwrap().contains_key(token_str);
   }
 
   fn return_token(&self, token_str: &str) {
+    if !Self::validate_token_string(token_str) {
+      return;
+    }
     self.active_tokens.write().unwrap().remove(token_str);
   }
 }
@@ -95,5 +111,47 @@ mod tests {
   #[test]
   fn foo() {
     assert!(true)
+  }
+
+  #[test]
+  fn generate_token_string_works() {
+    let s = SimpleTokenService::generate_token_string();
+    assert!(SimpleTokenService::validate_token_string(&s));
+  }
+
+  #[test]
+  fn validate_token_string_works() {
+    let good = vec![
+      // random valid 32-byte base64 strings
+      "ouHscPlE4L6fYCUA6zlCjqckou46e_iFbOEfZjZa5-Y",
+      "RF7JM82Yvsh-2oJe20ivOU33SccYud0aUBmB6vmgPis",
+      "ir2qZHC-CZ2-u4giZ3wmLvtKGx4quJsn4i2nXOVuiYM",
+      "VMeK45pfgsKl1qiO4Vc5tzBqoDFkcjLiIhpnNGkcv3A",
+      "OyVRKZROtGA2lA_uIxoAEOigXN4Swp5D8aPdyjcVW58",
+      "soWDVu1uLBe-MvSsF7jETO47qu0y60UBOPUv69uszE4",
+      "TISyHR8fMIekYmaMOGiw_SX6X3nXjcZHWj_tmkYx_cE",
+      "eAupXxenSTcoSwT7FWhsq75R_Dfe5P4JuRwpEFqj0jI",
+      "Hw2fv0g1_UA8yD_lkAQxu1HXGbk3fpPLGo8Sz9nlVnU",
+      "ahi1GB97Cv0k673CNaDx_0XUiE6i5PoN2qC1l9_EumU",
+    ];
+
+    let bad = vec![
+      "",
+      "foo",
+      "Wg4uDezO9Xh-_rjkX9Ol_-8N2bq4cZ5BePDaiewv9g", // 31 bytes
+      "PHCQ_Rj1ujC177AyZlhWkiMoD5prslq4EAvVUczWLaw8", // 33 bytes
+    ];
+
+    assert!(
+      good
+        .iter()
+        .all(|s| SimpleTokenService::validate_token_string(&s)),
+    );
+
+    assert!(
+      !bad
+        .iter()
+        .any(|s| SimpleTokenService::validate_token_string(&s))
+    )
   }
 }
