@@ -19,7 +19,7 @@ pub struct Token {
 pub struct SimpleTokenService {
   default_lifetime: chrono::Duration,
 
-  active_tokens: Arc<RwLock<HashMap<String, Token>>>,
+  active_tokens: RwLock<HashMap<String, Token>>,
 }
 
 impl SimpleTokenService {
@@ -27,7 +27,7 @@ impl SimpleTokenService {
     static INSTANCE: OnceLock<SimpleTokenService> = OnceLock::new();
     return INSTANCE.get_or_init(|| SimpleTokenService {
       default_lifetime: chrono::Duration::days(1),
-      active_tokens: Arc::new(RwLock::new(HashMap::new())),
+      active_tokens: RwLock::new(HashMap::new()),
     });
   }
 
@@ -76,5 +76,15 @@ impl TokenService for SimpleTokenService {
 
   fn return_token(&self, token_str: &str) {
     self.active_tokens.write().unwrap().remove(token_str);
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn foo() {
+    assert!(true)
   }
 }
