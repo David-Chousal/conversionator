@@ -1,4 +1,6 @@
 mod simple_database;
+mod team_repository;
 mod user_repository;
 
 pub use simple_database::SimpleDatabase;
+pub use user_repository::UserRepository;
