@@ -7,11 +7,11 @@ use crate::{
 
 pub struct SimpleDatabase {
   db_file: File,
-  storage: RwLock<SimpleDatabaseStorage>,
+  data: RwLock<SimpleDatabaseData>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
-struct SimpleDatabaseStorage {
+struct SimpleDatabaseData {
   user_store: HashMap<u128, User>,
   team_store: HashMap<u128, Team>,
 }
@@ -21,7 +21,7 @@ impl SimpleDatabase {
     if let Ok(storage) = rmp_serde::from_read(&file) {
       return SimpleDatabase {
         db_file: file,
-        storage: RwLock::new(storage),
+        data: RwLock::new(storage),
       };
     } else {
       panic!("failed to read db file")
@@ -29,8 +29,7 @@ impl SimpleDatabase {
   }
 
   fn sync_to_file(&self) {
-    let buf =
-      rmp_serde::encode::to_vec::<SimpleDatabaseStorage>(&self.storage.read().unwrap()).unwrap(); // are these unwraps okay
+    let buf = rmp_serde::encode::to_vec::<SimpleDatabaseData>(&self.data.read().unwrap()).unwrap(); // are these unwraps okay
     self.db_file.lock().unwrap();
     if let Ok(n) = (&self.db_file).write(&buf) {
       if n != buf.len() {
@@ -53,7 +52,7 @@ impl Drop for SimpleDatabase {
 impl UserRepository for SimpleDatabase {
   fn save(&self, user: &User) -> Option<User> {
     self
-      .storage
+      .data
       .write()
       .unwrap()
       .user_store
@@ -62,7 +61,7 @@ impl UserRepository for SimpleDatabase {
 
   fn get_by_id(&self, id: u128) -> Option<User> {
     self
-      .storage
+      .data
       .read()
       .unwrap()
       .user_store
@@ -72,7 +71,7 @@ impl UserRepository for SimpleDatabase {
 
   fn get_by_username(&self, username: &str) -> Option<User> {
     self
-      .storage
+      .data
       .read()
       .unwrap()
       .user_store
@@ -82,7 +81,7 @@ impl UserRepository for SimpleDatabase {
   }
 
   fn delete_by_id(&self, id: u128) -> Result<User, &str> {
-    match self.storage.write().unwrap().user_store.remove(&id) {
+    match self.data.write().unwrap().user_store.remove(&id) {
       Some(u) => Ok(u),
       None => Err("key not found"),
     }
@@ -92,7 +91,7 @@ impl UserRepository for SimpleDatabase {
 impl TeamRepository for SimpleDatabase {
   fn save(&self, team: &Team) -> Option<Team> {
     self
-      .storage
+      .data
       .write()
       .unwrap()
       .team_store
@@ -101,7 +100,7 @@ impl TeamRepository for SimpleDatabase {
 
   fn get_by_id(&self, id: u128) -> Option<Team> {
     self
-      .storage
+      .data
       .read()
       .unwrap()
       .team_store
@@ -110,7 +109,7 @@ impl TeamRepository for SimpleDatabase {
   }
 
   fn delete_by_id(&self, id: u128) -> Result<Team, &str> {
-    match self.storage.write().unwrap().team_store.remove(&id) {
+    match self.data.write().unwrap().team_store.remove(&id) {
       Some(t) => Ok(t),
       None => Err("team not found"),
     }
