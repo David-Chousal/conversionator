@@ -1,3 +1,7 @@
+mod simple_auth_service;
+
+pub use simple_auth_service::SimpleAuthService;
+
 pub trait AuthService {
   type Token;
   type PasswordHash;
