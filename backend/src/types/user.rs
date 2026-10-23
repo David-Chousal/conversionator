@@ -15,4 +15,5 @@ pub struct User {
   pub email: String,
   pub role: UserRole,
   pub created_at: chrono::DateTime<Utc>,
+  pub team_ids: Vec<u64>,
 }
