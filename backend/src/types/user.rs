@@ -11,7 +11,7 @@ pub enum UserRole {
 pub struct User {
   pub id: u128,
   pub username: String,
-  pub password_hash: u64,
+  pub password_hash: u128,
   pub email: String,
   pub role: UserRole,
   pub created_at: chrono::DateTime<Utc>,
