@@ -14,7 +14,7 @@ use crate::token_service::TokenService;
 #[derive(Clone)]
 pub struct Token {
   pub token_string: String,
-  pub user_id: u64,
+  pub user_id: u128,
   pub expires: chrono::DateTime<Utc>,
 }
 

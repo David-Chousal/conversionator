@@ -12,8 +12,8 @@ pub struct SimpleDatabase {
 
 #[derive(serde::Serialize, serde::Deserialize)]
 struct SimpleDatabaseStorage {
-  user_store: HashMap<u64, User>,
-  team_store: HashMap<u64, Team>,
+  user_store: HashMap<u128, User>,
+  team_store: HashMap<u128, Team>,
 }
 
 impl SimpleDatabase {
@@ -60,7 +60,7 @@ impl UserRepository for SimpleDatabase {
       .insert(user.id, user.clone())
   }
 
-  fn get_by_id(&self, id: u64) -> Option<User> {
+  fn get_by_id(&self, id: u128) -> Option<User> {
     self
       .storage
       .read()
@@ -81,7 +81,7 @@ impl UserRepository for SimpleDatabase {
       .map(|(_, v)| v.clone())
   }
 
-  fn delete_by_id(&self, id: u64) -> Result<User, &str> {
+  fn delete_by_id(&self, id: u128) -> Result<User, &str> {
     match self.storage.write().unwrap().user_store.remove(&id) {
       Some(u) => Ok(u),
       None => Err("key not found"),
@@ -99,7 +99,7 @@ impl TeamRepository for SimpleDatabase {
       .insert(team.id, team.clone())
   }
 
-  fn get_by_id(&self, id: u64) -> Option<Team> {
+  fn get_by_id(&self, id: u128) -> Option<Team> {
     self
       .storage
       .read()
@@ -109,7 +109,7 @@ impl TeamRepository for SimpleDatabase {
       .map(|u| u.clone())
   }
 
-  fn delete_by_id(&self, id: u64) -> Result<Team, &str> {
+  fn delete_by_id(&self, id: u128) -> Result<Team, &str> {
     match self.storage.write().unwrap().team_store.remove(&id) {
       Some(t) => Ok(t),
       None => Err("team not found"),

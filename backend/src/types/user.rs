@@ -9,11 +9,11 @@ pub enum UserRole {
 
 #[derive(Hash, Serialize, Deserialize, Clone)]
 pub struct User {
-  pub id: u64,
+  pub id: u128,
   pub username: String,
   pub password_hash: u64,
   pub email: String,
   pub role: UserRole,
   pub created_at: chrono::DateTime<Utc>,
-  pub team_ids: Vec<u64>,
+  pub team_ids: Vec<u128>,
 }
