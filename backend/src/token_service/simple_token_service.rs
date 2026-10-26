@@ -18,6 +18,12 @@ pub struct Token {
   pub expires: chrono::DateTime<Utc>,
 }
 
+impl Token {
+  pub fn is_expired(&self) -> bool {
+    self.expires < Utc::now()
+  }
+}
+
 pub struct SimpleTokenService {
   default_lifetime: chrono::Duration,
 
@@ -95,14 +101,23 @@ impl TokenService for SimpleTokenService {
     if !Self::validate_token_string(token_str) {
       return false;
     }
-    if let Some(t) = self.active_tokens.read().unwrap().get(token_str) {
-      if t.expires > Utc::now() {
-        return true;
-      } else {
-        self.active_tokens.write().unwrap().remove(token_str);
-      }
+    match self
+      .active_tokens
+      .read()
+      .map(|g| g.get(token_str).map(|t| t.is_expired()))
+    {
+      Ok(Some(false)) => true,
+      _ => false,
     }
-    return false;
+
+    // if let Some(t) = self.active_tokens.read().unwrap().get(token_str) {
+    //   if t.expires > Utc::now() {
+    //     return true;
+    //   } else {
+    //     self.active_tokens.write().unwrap().remove(token_str);
+    //   }
+    // }
+    // return false;
   }
 
   fn return_token(&self, token_str: &str) {
