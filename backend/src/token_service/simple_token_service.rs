@@ -65,10 +65,10 @@ impl SimpleTokenService {
       expires: Utc::now() + lifetime,
     };
 
-    let lock_result = self.active_tokens.write();
-    match lock_result {
-      Ok(mut rwg) => rwg.insert(token_string, t.clone()),
-      Err(pe) => panic!("{}", pe),
+    if let Err(pe) = self.active_tokens.write().map(|mut g| {
+      g.insert(token_string, t.clone());
+    }) {
+      panic!("{}", pe);
     };
 
     return t;
