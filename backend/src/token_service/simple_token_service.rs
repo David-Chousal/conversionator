@@ -106,18 +106,10 @@ impl TokenService for SimpleTokenService {
       .read()
       .map(|g| g.get(token_str).map(|t| t.is_expired()))
     {
+      Err(pe) => panic!("{}", pe), // TODO handle lock poison
       Ok(Some(false)) => true,
       _ => false,
     }
-
-    // if let Some(t) = self.active_tokens.read().unwrap().get(token_str) {
-    //   if t.expires > Utc::now() {
-    //     return true;
-    //   } else {
-    //     self.active_tokens.write().unwrap().remove(token_str);
-    //   }
-    // }
-    // return false;
   }
 
   fn return_token(&self, token_str: &str) {
