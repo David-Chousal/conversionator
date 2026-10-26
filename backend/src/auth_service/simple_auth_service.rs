@@ -22,7 +22,7 @@ impl AuthService for SimpleAuthService {
       if password_hash != u.password_hash {
         return Err("Password incorrect");
       }
-      return Ok(SimpleTokenService::get_default_instance().generate_token(u));
+      return Ok(SimpleTokenService::get_default_instance().generate_token(&u));
     } else {
       return Err("User not found");
     }

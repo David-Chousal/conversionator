@@ -54,7 +54,7 @@ impl SimpleTokenService {
 
   fn generate_token_with_lifetime(
     &self,
-    user: User,
+    user: &User,
     lifetime: chrono::Duration,
   ) -> <Self as TokenService>::Token {
     let token_string = Self::generate_token_string();
@@ -87,13 +87,22 @@ impl SimpleTokenService {
 impl TokenService for SimpleTokenService {
   type Token = Token;
 
-  fn generate_token(&self, user: User) -> Self::Token {
+  fn generate_token(&self, user: &User) -> Self::Token {
     self.generate_token_with_lifetime(user, self.default_lifetime)
   }
 
   fn verify_token(&self, token_str: &str) -> bool {
-    return Self::validate_token_string(token_str)
-      && self.active_tokens.read().unwrap().contains_key(token_str);
+    if !Self::validate_token_string(token_str) {
+      return false;
+    }
+    if let Some(t) = self.active_tokens.read().unwrap().get(token_str) {
+      if t.expires > Utc::now() {
+        return true;
+      } else {
+        self.active_tokens.write().unwrap().remove(token_str);
+      }
+    }
+    return false;
   }
 
   fn return_token(&self, token_str: &str) {
@@ -106,12 +115,14 @@ impl TokenService for SimpleTokenService {
 
 #[cfg(test)]
 mod tests {
+  use chrono::TimeDelta;
+
   use super::*;
 
   #[test]
   fn generate_token_string_works() {
     let s = SimpleTokenService::generate_token_string();
-    assert!(SimpleTokenService::validate_token_string(&s));
+    assert!(!s.is_empty());
   }
 
   #[test]
@@ -148,5 +159,42 @@ mod tests {
         .iter()
         .any(|s| SimpleTokenService::validate_token_string(&s))
     )
+  }
+
+  #[test]
+  fn take_and_return_token_works() {
+    let user = User::get_dummy();
+    let token_service = SimpleTokenService::get_default_instance();
+
+    let token = token_service.generate_token(&user);
+    assert!(token_service.verify_token(&token.token_string));
+    token_service.return_token(&token.token_string);
+    assert!(!token_service.verify_token(&token.token_string));
+  }
+
+  #[test]
+  fn take_and_return_multiple_tokens_works() {
+    let user = User::get_dummy();
+    let token_service = SimpleTokenService::get_default_instance();
+
+    let t1 = token_service.generate_token(&user);
+    assert!(token_service.verify_token(&t1.token_string));
+    let t2 = token_service.generate_token(&user);
+    assert!(token_service.verify_token(&t2.token_string));
+
+    token_service.return_token(&t1.token_string);
+    assert!(!token_service.verify_token(&t1.token_string));
+    token_service.return_token(&t2.token_string);
+    assert!(!token_service.verify_token(&t2.token_string));
+  }
+
+  #[test]
+  fn token_timeout_works() {
+    let user = User::get_dummy();
+    let token_service = SimpleTokenService::get_default_instance();
+
+    let token = token_service.generate_token_with_lifetime(&user, TimeDelta::zero());
+    std::thread::sleep(std::time::Duration::from_micros(10));
+    assert!(!token_service.verify_token(&token.token_string));
   }
 }
