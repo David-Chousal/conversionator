@@ -196,6 +196,27 @@ mod tests {
     assert!(!token_service.verify_token(&t1.token_string));
     token_service.return_token(&t2.token_string);
     assert!(!token_service.verify_token(&t2.token_string));
+
+    let many_tokens = vec![(); 100]
+      .into_iter()
+      .map(|_| token_service.generate_token(&user))
+      .collect::<Vec<Token>>();
+
+    assert!(
+      many_tokens
+        .iter()
+        .all(|t| token_service.verify_token(&t.token_string))
+    );
+
+    many_tokens
+      .iter()
+      .for_each(|t| token_service.return_token(&t.token_string));
+
+    assert!(
+      !many_tokens
+        .iter()
+        .any(|t| token_service.verify_token(&t.token_string))
+    );
   }
 
   #[test]
@@ -204,7 +225,7 @@ mod tests {
     let token_service = SimpleTokenService::get_default_instance();
 
     let token = token_service.generate_token_with_lifetime(&user, TimeDelta::days(1));
-    let token_short = token_service.generate_token_with_lifetime(&user, TimeDelta::zero());
+    let token_short = token_service.generate_token_with_lifetime(&user, TimeDelta::microseconds(5));
     std::thread::sleep(std::time::Duration::from_micros(10));
     assert!(token_service.verify_token(&token.token_string));
     assert!(!token_service.verify_token(&token_short.token_string));
