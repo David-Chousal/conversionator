@@ -11,8 +11,6 @@ pub struct SimpleAuthService {
   user_repository: &'static dyn UserRepository,
 }
 
-unsafe impl Sync for SimpleAuthService {}
-
 impl SimpleAuthService {
   pub fn get_default_instance() -> &'static Self {
     static INSTANCE: LazyLock<SimpleAuthService> = LazyLock::new(|| SimpleAuthService {
