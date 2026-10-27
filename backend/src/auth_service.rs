@@ -14,3 +14,7 @@ pub trait AuthService {
   fn logout(&self, token_str: &str) -> Result<(), &'static str>;
   fn verify_token(&self, token_str: &str) -> bool;
 }
+
+pub fn get_default() -> &'static impl AuthService {
+  return SimpleAuthService::get_default_instance();
+}
