@@ -148,11 +148,14 @@ mod tests {
       "ahi1GB97Cv0k673CNaDx_0XUiE6i5PoN2qC1l9_EumU",
     ];
 
+    let long_bad_input: String = vec!['a'; 100].iter().collect();
+
     let bad = vec![
       "",
       "foo",
       "Wg4uDezO9Xh-_rjkX9Ol_-8N2bq4cZ5BePDaiewv9g", // 31 bytes
       "PHCQ_Rj1ujC177AyZlhWkiMoD5prslq4EAvVUczWLaw8", // 33 bytes
+      &long_bad_input,
     ];
 
     assert!(
