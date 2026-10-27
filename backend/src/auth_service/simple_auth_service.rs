@@ -2,7 +2,7 @@ use std::sync::LazyLock;
 
 use crate::{
   auth_service::AuthService,
-  database::{UserRepository, user_repository},
+  database::{SimpleDatabase, UserRepository, user_repository},
   token_service::{SimpleTokenService, TokenService},
   types::User,
 };
@@ -13,10 +13,13 @@ pub struct SimpleAuthService {
 
 impl SimpleAuthService {
   pub fn get_default_instance() -> &'static Self {
-    static INSTANCE: LazyLock<SimpleAuthService> = LazyLock::new(|| SimpleAuthService {
-      user_repository: user_repository::get_default(),
-    });
+    static INSTANCE: LazyLock<SimpleAuthService> =
+      LazyLock::new(|| SimpleAuthService::new(SimpleDatabase::get_default_instance()));
     &INSTANCE
+  }
+
+  pub fn new(user_repository: &'static dyn UserRepository) -> Self {
+    Self { user_repository }
   }
 
   pub fn register(&self, user: &User) {
