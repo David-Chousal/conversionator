@@ -48,23 +48,23 @@ impl SimpleDatabase {
     }
   }
 
-  fn from_file(file: File) -> Self {
-    if let Ok(storage) = rmp_serde::from_read(&file) {
-      return SimpleDatabase {
+  fn from_file(file: File) -> Result<Self, &'static str> {
+    if let Ok(data) = rmp_serde::from_read(&file) {
+      return Ok(SimpleDatabase {
         db_file: file,
-        data: RwLock::new(storage),
-      };
+        data: RwLock::new(data),
+      });
     } else {
-      panic!("failed to read db file")
+      return Err("failed to read db file");
     }
   }
 
-  fn sync_to_file(&self) {
+  pub fn sync_to_file(&self) -> Result<(), &'static str> {
     let buf = rmp_serde::encode::to_vec::<SimpleDatabaseData>(&self.data.read().unwrap()).unwrap(); // are these unwraps okay
     self.db_file.lock().unwrap();
     if let Ok(n) = (&self.db_file).write(&buf) {
       if n != buf.len() {
-        todo!(); // TODO
+        todo!();
       }
     } else {
       panic!("failed to write to db file");
@@ -76,7 +76,10 @@ impl SimpleDatabase {
 
 impl Drop for SimpleDatabase {
   fn drop(&mut self) {
-    self.sync_to_file();
+    match self.sync_to_file() {
+      Ok(_) => (),
+      Err(msg) => eprintln!("error syncing to file: {}", msg),
+    };
   }
 }
 
