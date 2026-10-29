@@ -15,6 +15,7 @@ use crate::token_service::TokenService;
 pub struct Token {
   pub token_string: String,
   pub user_id: u128,
+  pub role: UserRole,
   pub expires: chrono::DateTime<Utc>,
 }
 
@@ -68,6 +69,7 @@ impl SimpleTokenService {
     let t: Token = Token {
       token_string: token_string.clone(),
       user_id: user.id,
+      role: user.role,
       expires: Utc::now() + lifetime,
     };
 
@@ -106,7 +108,7 @@ impl TokenService for SimpleTokenService {
       .read()
       .map(|g| g.get(token_str).map(|t| t.is_expired()))
     {
-      Err(pe) => panic!("{}", pe), // TODO handle lock poison
+      Err(_) => todo!(),
       Ok(Some(false)) => true,
       _ => false,
     }

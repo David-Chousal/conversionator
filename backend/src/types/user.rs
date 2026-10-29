@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::auth_service::{AuthService, SimpleAuthService};
 
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum UserRole {
   User = 0,
   Admin = 1,

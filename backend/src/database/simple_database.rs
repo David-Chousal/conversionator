@@ -30,6 +30,20 @@ impl SimpleDatabaseData {
   }
 }
 
+pub enum SyncError {
+  DecodeError(rmp_serde::decode::Error),
+  WriteError(std::io::Error),
+}
+
+impl std::fmt::Display for SyncError {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+      Self::DecodeError(e) => e.fmt(f),
+      Self::WriteError(e) => e.fmt(f),
+    }
+  }
+}
+
 impl SimpleDatabase {
   pub fn get_default_instance() -> &'static Self {
     static INSTANCE: LazyLock<SimpleDatabase> =
@@ -38,7 +52,19 @@ impl SimpleDatabase {
   }
 
   fn with_filename(name: &str) -> Self {
-    if let Ok(f) = File::create(name) {
+    if let p = std::path::Path::new(name)
+      && p.exists()
+      && let Ok(f) = File::open(p)
+    {
+      match Self::from_file(f) {
+        Ok(db) => return db,
+        Err(e) => {
+          eprintln!("failed to read db file: {}", e);
+          eprintln!("backing up old file to {}.bak", name);
+        }
+      }
+    }
+    if let Ok(f) = File::create_new(name) {
       return SimpleDatabase {
         db_file: f,
         data: RwLock::new(SimpleDatabaseData::new()),
@@ -48,29 +74,23 @@ impl SimpleDatabase {
     }
   }
 
-  fn from_file(file: File) -> Result<Self, &'static str> {
-    if let Ok(data) = rmp_serde::from_read(&file) {
-      return Ok(SimpleDatabase {
-        db_file: file,
-        data: RwLock::new(data),
-      });
-    } else {
-      return Err("failed to read db file");
-    }
+  fn from_file(file: File) -> Result<Self, rmp_serde::decode::Error> {
+    rmp_serde::from_read(&file).map(|data| SimpleDatabase {
+      db_file: file,
+      data: RwLock::new(data),
+    })
   }
 
-  pub fn sync_to_file(&self) -> Result<(), &'static str> {
+  pub fn sync_to_file(&self) -> Result<(), SyncError> {
+    // TODO async maybe?
     let buf = rmp_serde::encode::to_vec::<SimpleDatabaseData>(&self.data.read().unwrap()).unwrap(); // are these unwraps okay
     self.db_file.lock().unwrap();
-    if let Ok(n) = (&self.db_file).write(&buf) {
-      if n != buf.len() {
-        todo!();
-      }
-    } else {
-      panic!("failed to write to db file");
+    if let Err(e) = (&self.db_file).write_all(&buf) {
+      let _ = self.db_file.unlock();
+      return Err(SyncError::WriteError(e));
     };
     self.db_file.unlock().unwrap();
-    todo!()
+    Ok(())
   }
 }
 
@@ -78,7 +98,7 @@ impl Drop for SimpleDatabase {
   fn drop(&mut self) {
     match self.sync_to_file() {
       Ok(_) => (),
-      Err(msg) => eprintln!("error syncing to file: {}", msg),
+      Err(e) => eprintln!("error syncing to file: {}", e),
     };
   }
 }
@@ -149,3 +169,6 @@ impl TeamRepository for SimpleDatabase {
     }
   }
 }
+
+#[cfg(test)]
+mod tests {}

@@ -2,7 +2,7 @@ use std::sync::LazyLock;
 
 use crate::{
   auth_service::AuthService,
-  database::{SimpleDatabase, UserRepository, user_repository},
+  database::{SimpleDatabase, UserRepository},
   token_service::{SimpleTokenService, TokenService},
   types::User,
 };
