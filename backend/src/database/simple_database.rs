@@ -61,6 +61,7 @@ impl SimpleDatabase {
         Err(e) => {
           eprintln!("failed to read db file: {}", e);
           eprintln!("backing up old file to {}.bak", name);
+          todo!()
         }
       }
     }
