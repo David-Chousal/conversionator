@@ -38,8 +38,8 @@ pub enum SyncError {
 impl std::fmt::Display for SyncError {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match self {
-      Self::DecodeError(e) => e.fmt(f),
-      Self::WriteError(e) => e.fmt(f),
+      Self::DecodeError(e) => write!(f, "SyncError: {}", e),
+      Self::WriteError(e) => write!(f, "SyncError: {}", e),
     }
   }
 }
