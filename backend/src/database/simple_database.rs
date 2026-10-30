@@ -1,7 +1,6 @@
 use std::{
   collections::HashMap,
   fs::File,
-  io::Write,
   sync::{LazyLock, RwLock},
 };
 
@@ -31,6 +30,7 @@ impl SimpleDatabaseData {
 }
 
 pub enum SyncError {
+  EncodeError(rmp_serde::encode::Error),
   DecodeError(rmp_serde::decode::Error),
   WriteError(std::io::Error),
 }
@@ -40,6 +40,7 @@ impl std::fmt::Display for SyncError {
     match self {
       Self::DecodeError(e) => write!(f, "SyncError: {}", e),
       Self::WriteError(e) => write!(f, "SyncError: {}", e),
+      Self::EncodeError(e) => write!(f, "SyncError: {}", e),
     }
   }
 }
@@ -84,13 +85,25 @@ impl SimpleDatabase {
 
   pub fn sync_to_file(&self) -> Result<(), SyncError> {
     // TODO async maybe?
-    let buf = rmp_serde::encode::to_vec::<SimpleDatabaseData>(&self.data.read().unwrap()).unwrap(); // are these unwraps okay
-    self.db_file.lock().unwrap();
-    if let Err(e) = (&self.db_file).write_all(&buf) {
-      let _ = self.db_file.unlock();
-      return Err(SyncError::WriteError(e));
+    // let data = self.data.read();
+    // let buf = rmp_serde::encode::to_vec::<SimpleDatabaseData>(&data.unwrap()).unwrap(); // are these unwraps okay
+    // self.db_file.lock().unwrap();
+    // if let Err(e) = (&self.db_file).write_all(&buf) {
+    //   let _ = self.db_file.unlock();
+    //   return Err(SyncError::WriteError(e));
+    // };
+    // self.db_file.unlock().unwrap();
+    // Ok(())
+
+    let data_read_guard = match self.data.read() {
+      Ok(g) => g,
+      Err(e) => e.into_inner(), // fuck it we ball
     };
-    self.db_file.unlock().unwrap();
+
+    if let Err(e) = rmp_serde::encode::write(&mut &self.db_file, &*data_read_guard) {
+      return Err(SyncError::EncodeError(e));
+    }
+
     Ok(())
   }
 }
