@@ -47,8 +47,9 @@ impl std::fmt::Display for SyncError {
 
 impl SimpleDatabase {
   pub fn get_default_instance() -> &'static Self {
-    static INSTANCE: LazyLock<SimpleDatabase> =
-      LazyLock::new(|| SimpleDatabase::with_filename("SimpleDatabase_default.db"));
+    static INSTANCE: LazyLock<SimpleDatabase> = LazyLock::new(|| {
+      SimpleDatabase::with_filename("SimpleDatabase_default.db")
+    });
     &INSTANCE
   }
 
@@ -100,7 +101,9 @@ impl SimpleDatabase {
       Err(e) => e.into_inner(), // fuck it we ball
     };
 
-    if let Err(e) = rmp_serde::encode::write(&mut &self.db_file, &*data_read_guard) {
+    if let Err(e) =
+      rmp_serde::encode::write(&mut &self.db_file, &*data_read_guard)
+    {
       return Err(SyncError::EncodeError(e));
     }
 

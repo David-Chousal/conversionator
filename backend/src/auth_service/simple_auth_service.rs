@@ -14,7 +14,9 @@ pub struct SimpleAuthService {
 impl SimpleAuthService {
   pub fn get_default_instance() -> &'static Self {
     static INSTANCE: LazyLock<SimpleAuthService> =
-      LazyLock::new(|| SimpleAuthService::new(SimpleDatabase::get_default_instance()));
+      LazyLock::new(|| {
+        SimpleAuthService::new(SimpleDatabase::get_default_instance())
+      });
     &INSTANCE
   }
 
@@ -41,19 +43,25 @@ impl AuthService for SimpleAuthService {
       if password_hash != u.password_hash {
         return Err("Password incorrect");
       }
-      return Ok(SimpleTokenService::get_default_instance().generate_token(&u));
+      return Ok(
+        SimpleTokenService::get_default_instance().generate_token(&u),
+      );
     } else {
       return Err("User not found");
     }
   }
 
   fn logout(&self, token_str: &str) -> Result<(), &'static str> {
-    Ok(SimpleTokenService::get_default_instance().return_token(token_str))
+    Ok(
+      SimpleTokenService::get_default_instance()
+        .return_token(token_str),
+    )
   }
 
   fn verify_token(&self, token_str: &str) -> bool {
     SimpleTokenService::validate_token_string(token_str)
-      && SimpleTokenService::get_default_instance().verify_token(token_str)
+      && SimpleTokenService::get_default_instance()
+        .verify_token(token_str)
   }
 }
 
@@ -69,7 +77,10 @@ mod tests {
     let auth_service = SimpleAuthService::get_default_instance();
     auth_service.register(&u);
     match auth_service.login(u.username, u.password_hash) {
-      Ok(t) => assert!(SimpleTokenService::get_default_instance().verify_token(&t.token_string)),
+      Ok(t) => assert!(
+        SimpleTokenService::get_default_instance()
+          .verify_token(&t.token_string)
+      ),
       Err(e) => panic!("login failed: {}", e),
     };
   }
@@ -79,7 +90,9 @@ mod tests {
     let u = User::get_dummy();
     let auth_service = SimpleAuthService::get_default_instance();
     auth_service.register(&u);
-    assert!(auth_service.login(u.username, u.password_hash + 1).is_err());
+    assert!(
+      auth_service.login(u.username, u.password_hash + 1).is_err()
+    );
   }
 
   #[test]
@@ -99,7 +112,10 @@ mod tests {
     let auth_service = SimpleAuthService::get_default_instance();
     auth_service.register(&u);
     match auth_service.login(u.username, u.password_hash) {
-      Ok(_) => assert!(!auth_service.verify_token("RF7JM82Yvsh-2oJe20ivOU33SccYud0aUBmB6vmgPis")),
+      Ok(_) => assert!(
+        !auth_service
+          .verify_token("RF7JM82Yvsh-2oJe20ivOU33SccYud0aUBmB6vmgPis")
+      ),
       Err(e) => panic!("login failed: {}", e),
     };
   }

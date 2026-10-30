@@ -226,8 +226,10 @@ mod tests {
     let user = User::get_dummy();
     let token_service = SimpleTokenService::get_default_instance();
 
-    let token = token_service.generate_token_with_lifetime(&user, TimeDelta::days(1));
-    let token_short = token_service.generate_token_with_lifetime(&user, TimeDelta::microseconds(5));
+    let token = token_service
+      .generate_token_with_lifetime(&user, TimeDelta::days(1));
+    let token_short = token_service
+      .generate_token_with_lifetime(&user, TimeDelta::microseconds(5));
     std::thread::sleep(std::time::Duration::from_micros(10));
     assert!(token_service.verify_token(&token.token_string));
     assert!(!token_service.verify_token(&token_short.token_string));
