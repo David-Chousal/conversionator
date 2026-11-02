@@ -153,4 +153,10 @@ impl TeamRepository for SimpleDatabase {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+
+  #[test]
+  fn foo() {
+    assert!(true);
+  }
+}
