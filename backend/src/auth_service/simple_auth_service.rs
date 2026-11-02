@@ -30,15 +30,13 @@ impl SimpleAuthService {
 }
 
 impl AuthService for SimpleAuthService {
-  type Token = <SimpleTokenService as TokenService>::Token;
-
   type PasswordHash = u128;
 
   fn login(
     &self,
     username: String,
     password_hash: Self::PasswordHash,
-  ) -> Result<Self::Token, &'static str> {
+  ) -> Result<String, &'static str> {
     if let Some(u) = self.user_repository.get_by_username(&username) {
       if password_hash != u.password_hash {
         return Err("Password incorrect");
@@ -78,8 +76,7 @@ mod tests {
     auth_service.register(&u);
     match auth_service.login(u.username, u.password_hash) {
       Ok(t) => assert!(
-        SimpleTokenService::get_default_instance()
-          .verify_token(&t.token_string)
+        SimpleTokenService::get_default_instance().verify_token(&t)
       ),
       Err(e) => panic!("login failed: {}", e),
     };
@@ -101,7 +98,7 @@ mod tests {
     let auth_service = SimpleAuthService::get_default_instance();
     auth_service.register(&u);
     match auth_service.login(u.username, u.password_hash) {
-      Ok(t) => assert!(auth_service.verify_token(&t.token_string)),
+      Ok(t) => assert!(auth_service.verify_token(&t)),
       Err(e) => panic!("login failed: {}", e),
     };
   }
@@ -126,6 +123,6 @@ mod tests {
     let auth_service = SimpleAuthService::get_default_instance();
     auth_service.register(&u);
     let t = auth_service.login(u.username, u.password_hash).unwrap();
-    assert!(auth_service.logout(&t.token_string).is_ok());
+    assert!(auth_service.logout(&t).is_ok());
   }
 }

@@ -63,7 +63,7 @@ impl SimpleTokenService {
     &self,
     user: &User,
     lifetime: chrono::Duration,
-  ) -> <Self as TokenService>::Token {
+  ) -> String {
     let token_string = Self::generate_token_string();
 
     let t: Token = Token {
@@ -74,12 +74,12 @@ impl SimpleTokenService {
     };
 
     if let Err(pe) = self.active_tokens.write().map(|mut g| {
-      g.insert(token_string, t.clone());
+      g.insert(token_string.clone(), t);
     }) {
       panic!("{}", pe);
     };
 
-    return t;
+    return token_string;
   }
 
   pub fn cleanup_expired(&self) {
@@ -93,9 +93,7 @@ impl SimpleTokenService {
 }
 
 impl TokenService for SimpleTokenService {
-  type Token = Token;
-
-  fn generate_token(&self, user: &User) -> Self::Token {
+  fn generate_token(&self, user: &User) -> String {
     self.generate_token_with_lifetime(user, self.default_lifetime)
   }
 
@@ -178,10 +176,10 @@ mod tests {
     let user = User::get_dummy();
     let token_service = SimpleTokenService::get_default_instance();
 
-    let token = token_service.generate_token(&user);
-    assert!(token_service.verify_token(&token.token_string));
-    token_service.return_token(&token.token_string);
-    assert!(!token_service.verify_token(&token.token_string));
+    let token_str = token_service.generate_token(&user);
+    assert!(token_service.verify_token(&token_str));
+    token_service.return_token(&token_str);
+    assert!(!token_service.verify_token(&token_str));
   }
 
   #[test]
@@ -190,34 +188,28 @@ mod tests {
     let token_service = SimpleTokenService::get_default_instance();
 
     let t1 = token_service.generate_token(&user);
-    assert!(token_service.verify_token(&t1.token_string));
+    assert!(token_service.verify_token(&t1));
     let t2 = token_service.generate_token(&user);
-    assert!(token_service.verify_token(&t2.token_string));
+    assert!(token_service.verify_token(&t2));
 
-    token_service.return_token(&t1.token_string);
-    assert!(!token_service.verify_token(&t1.token_string));
-    token_service.return_token(&t2.token_string);
-    assert!(!token_service.verify_token(&t2.token_string));
+    token_service.return_token(&t1);
+    assert!(!token_service.verify_token(&t1));
+    token_service.return_token(&t2);
+    assert!(!token_service.verify_token(&t2));
 
     let many_tokens = vec![(); 100]
       .into_iter()
       .map(|_| token_service.generate_token(&user))
-      .collect::<Vec<Token>>();
+      .collect::<Vec<String>>();
 
-    assert!(
-      many_tokens
-        .iter()
-        .all(|t| token_service.verify_token(&t.token_string))
-    );
+    assert!(many_tokens.iter().all(|t| token_service.verify_token(&t)));
 
     many_tokens
       .iter()
-      .for_each(|t| token_service.return_token(&t.token_string));
+      .for_each(|t| token_service.return_token(&t));
 
     assert!(
-      !many_tokens
-        .iter()
-        .any(|t| token_service.verify_token(&t.token_string))
+      !many_tokens.iter().any(|t| token_service.verify_token(&t))
     );
   }
 
@@ -231,7 +223,7 @@ mod tests {
     let token_short = token_service
       .generate_token_with_lifetime(&user, TimeDelta::microseconds(5));
     std::thread::sleep(std::time::Duration::from_micros(10));
-    assert!(token_service.verify_token(&token.token_string));
-    assert!(!token_service.verify_token(&token_short.token_string));
+    assert!(token_service.verify_token(&token));
+    assert!(!token_service.verify_token(&token_short));
   }
 }
