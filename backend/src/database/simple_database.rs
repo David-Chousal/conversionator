@@ -1,6 +1,6 @@
 use std::{
   collections::HashMap,
-  fs::File,
+  io::{Read, Write},
   sync::{LazyLock, RwLock},
 };
 
@@ -10,7 +10,6 @@ use crate::{
 };
 
 pub struct SimpleDatabase {
-  db_file: File,
   data: RwLock<SimpleDatabaseData>,
 }
 
@@ -47,76 +46,42 @@ impl std::fmt::Display for SyncError {
 
 impl SimpleDatabase {
   pub fn get_default_instance() -> &'static Self {
-    static INSTANCE: LazyLock<SimpleDatabase> = LazyLock::new(|| {
-      SimpleDatabase::with_filename("SimpleDatabase_default.db")
-    });
+    static INSTANCE: LazyLock<SimpleDatabase> =
+      LazyLock::new(SimpleDatabase::new);
     &INSTANCE
   }
 
-  fn with_filename(name: &str) -> Self {
-    if let p = std::path::Path::new(name)
-      && p.exists()
-      && let Ok(f) = File::open(p)
-    {
-      match Self::from_file(f) {
-        Ok(db) => return db,
-        Err(e) => {
-          eprintln!("failed to read db file: {}", e);
-          eprintln!("backing up old file to {}.bak", name);
-          todo!()
-        }
-      }
-    }
-    if let Ok(f) = File::create_new(name) {
-      return SimpleDatabase {
-        db_file: f,
-        data: RwLock::new(SimpleDatabaseData::new()),
-      };
-    } else {
-      panic!("failed to init db");
+  pub fn new() -> Self {
+    Self {
+      data: RwLock::new(SimpleDatabaseData::new()),
     }
   }
 
-  fn from_file(file: File) -> Result<Self, rmp_serde::decode::Error> {
-    rmp_serde::from_read(&file).map(|data| SimpleDatabase {
-      db_file: file,
+  pub fn from_read<T: Read>(
+    read: T,
+  ) -> Result<Self, rmp_serde::decode::Error> {
+    rmp_serde::from_read(read).map(|data| SimpleDatabase {
       data: RwLock::new(data),
     })
   }
 
-  pub fn sync_to_file(&self) -> Result<(), SyncError> {
-    // TODO async maybe?
-    // let data = self.data.read();
-    // let buf = rmp_serde::encode::to_vec::<SimpleDatabaseData>(&data.unwrap()).unwrap(); // are these unwraps okay
-    // self.db_file.lock().unwrap();
-    // if let Err(e) = (&self.db_file).write_all(&buf) {
-    //   let _ = self.db_file.unlock();
-    //   return Err(SyncError::WriteError(e));
-    // };
-    // self.db_file.unlock().unwrap();
-    // Ok(())
-
-    let data_read_guard = match self.data.read() {
-      Ok(g) => g,
-      Err(e) => e.into_inner(), // fuck it we ball
+  pub fn write_to<T: Write>(
+    &self,
+    dst: &mut T,
+  ) -> Result<(), rmp_serde::encode::Error> {
+    let data = match self.data.read() {
+      Ok(d) => d,
+      Err(e) => e.into_inner(),
     };
-
-    if let Err(e) =
-      rmp_serde::encode::write(&mut &self.db_file, &*data_read_guard)
-    {
-      return Err(SyncError::EncodeError(e));
-    }
-
-    Ok(())
+    rmp_serde::encode::write(dst, &*data)
   }
-}
 
-impl Drop for SimpleDatabase {
-  fn drop(&mut self) {
-    match self.sync_to_file() {
-      Ok(_) => (),
-      Err(e) => eprintln!("error syncing to file: {}", e),
+  pub fn get_rmp(&self) -> Result<Vec<u8>, rmp_serde::encode::Error> {
+    let data = match self.data.read() {
+      Ok(d) => d,
+      Err(e) => e.into_inner(),
     };
+    rmp_serde::encode::to_vec(&*data)
   }
 }
 
