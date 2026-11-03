@@ -1,8 +1,6 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::auth_service::{AuthService, SimpleAuthService};
-
 #[derive(
   Clone,
   Copy,
@@ -23,7 +21,7 @@ pub enum UserRole {
 pub struct User {
   pub id: u128,
   pub username: String,
-  pub password_hash: <SimpleAuthService as AuthService>::PasswordHash,
+  pub password_hash: u128,
   pub email: String,
   pub role: UserRole,
   pub created_at: chrono::DateTime<Utc>,

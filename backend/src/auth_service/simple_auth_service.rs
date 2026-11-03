@@ -29,13 +29,11 @@ impl SimpleAuthService {
   }
 }
 
-impl AuthService for SimpleAuthService {
-  type PasswordHash = u128;
-
+impl AuthService<u128> for SimpleAuthService {
   fn login(
     &self,
     username: String,
-    password_hash: Self::PasswordHash,
+    password_hash: u128,
   ) -> Result<String, &'static str> {
     if let Some(u) = self.user_repository.get_by_username(&username) {
       if password_hash != u.password_hash {
