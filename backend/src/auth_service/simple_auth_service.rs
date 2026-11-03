@@ -7,11 +7,12 @@ use crate::{
   types::User,
 };
 
-pub struct SimpleAuthService {
-  user_repository: &'static dyn UserRepository,
+pub struct SimpleAuthService<'a> {
+  user_repository: &'a dyn UserRepository,
 }
 
-impl SimpleAuthService {
+impl<'a> SimpleAuthService<'a> {
+  #[deprecated]
   pub fn get_default_instance() -> &'static Self {
     static INSTANCE: LazyLock<SimpleAuthService> =
       LazyLock::new(|| {
@@ -20,7 +21,7 @@ impl SimpleAuthService {
     &INSTANCE
   }
 
-  pub fn new(user_repository: &'static dyn UserRepository) -> Self {
+  pub fn new(user_repository: &'a dyn UserRepository) -> Self {
     Self { user_repository }
   }
 
@@ -29,7 +30,7 @@ impl SimpleAuthService {
   }
 }
 
-impl AuthService<u128> for SimpleAuthService {
+impl AuthService<u128> for SimpleAuthService<'_> {
   fn login(
     &self,
     username: String,
