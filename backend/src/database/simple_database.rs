@@ -1,7 +1,7 @@
 use std::{
   collections::HashMap,
   io::{Read, Write},
-  sync::{LazyLock, RwLock},
+  sync::RwLock,
 };
 
 use crate::{
@@ -45,13 +45,6 @@ impl std::fmt::Display for SyncError {
 }
 
 impl SimpleDatabase {
-  #[deprecated]
-  pub fn get_default_instance() -> &'static Self {
-    static INSTANCE: LazyLock<SimpleDatabase> =
-      LazyLock::new(SimpleDatabase::new);
-    &INSTANCE
-  }
-
   pub fn new() -> Self {
     Self {
       data: RwLock::new(SimpleDatabaseData::new()),

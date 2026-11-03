@@ -1,28 +1,24 @@
-use std::sync::LazyLock;
-
 use crate::{
   auth_service::AuthService,
-  database::{SimpleDatabase, UserRepository},
+  database::UserRepository,
   token_service::{SimpleTokenService, TokenService},
   types::User,
 };
 
 pub struct SimpleAuthService<'a> {
+  token_service: &'a dyn TokenService,
   user_repository: &'a dyn UserRepository,
 }
 
 impl<'a> SimpleAuthService<'a> {
-  #[deprecated]
-  pub fn get_default_instance() -> &'static Self {
-    static INSTANCE: LazyLock<SimpleAuthService> =
-      LazyLock::new(|| {
-        SimpleAuthService::new(SimpleDatabase::get_default_instance())
-      });
-    &INSTANCE
-  }
-
-  pub fn new(user_repository: &'a dyn UserRepository) -> Self {
-    Self { user_repository }
+  pub fn new(
+    token_service: &'a dyn TokenService,
+    user_repository: &'a dyn UserRepository,
+  ) -> Self {
+    Self {
+      token_service,
+      user_repository,
+    }
   }
 
   pub fn register(&self, user: &User) {
@@ -40,43 +36,42 @@ impl AuthService<u128> for SimpleAuthService<'_> {
       if password_hash != u.password_hash {
         return Err("Password incorrect");
       }
-      return Ok(
-        SimpleTokenService::get_default_instance().generate_token(&u),
-      );
+      return Ok(self.token_service.generate_token(&u));
     } else {
       return Err("User not found");
     }
   }
 
   fn logout(&self, token_str: &str) -> Result<(), &'static str> {
-    Ok(
-      SimpleTokenService::get_default_instance()
-        .return_token(token_str),
-    )
+    Ok(self.token_service.return_token(token_str))
   }
 
   fn verify_token(&self, token_str: &str) -> bool {
     SimpleTokenService::validate_token_string(token_str)
-      && SimpleTokenService::get_default_instance()
-        .verify_token(token_str)
+      && self.token_service.verify_token(token_str)
   }
 }
 
 #[cfg(test)]
 mod tests {
-  use crate::types::User;
+  use chrono::TimeDelta;
+
+  use crate::{database::SimpleDatabase, types::User};
 
   use super::*;
+
+  const ONE_DAY: TimeDelta = TimeDelta::days(1);
 
   #[test]
   fn login_works() {
     let u = User::get_dummy();
-    let auth_service = SimpleAuthService::get_default_instance();
+    let user_repository = SimpleDatabase::new();
+    let token_service = SimpleTokenService::new(ONE_DAY);
+    let auth_service =
+      SimpleAuthService::new(&token_service, &user_repository);
     auth_service.register(&u);
     match auth_service.login(u.username, u.password_hash) {
-      Ok(t) => assert!(
-        SimpleTokenService::get_default_instance().verify_token(&t)
-      ),
+      Ok(t) => assert!(auth_service.token_service.verify_token(&t)),
       Err(e) => panic!("login failed: {}", e),
     };
   }
@@ -84,7 +79,10 @@ mod tests {
   #[test]
   fn login_with_wrong_password_fails() {
     let u = User::get_dummy();
-    let auth_service = SimpleAuthService::get_default_instance();
+    let user_repository = SimpleDatabase::new();
+    let token_service = SimpleTokenService::new(ONE_DAY);
+    let auth_service =
+      SimpleAuthService::new(&token_service, &user_repository);
     auth_service.register(&u);
     assert!(
       auth_service.login(u.username, u.password_hash + 1).is_err()
@@ -94,7 +92,10 @@ mod tests {
   #[test]
   fn verify_token_works() {
     let u = User::get_dummy();
-    let auth_service = SimpleAuthService::get_default_instance();
+    let user_repository = SimpleDatabase::new();
+    let token_service = SimpleTokenService::new(ONE_DAY);
+    let auth_service =
+      SimpleAuthService::new(&token_service, &user_repository);
     auth_service.register(&u);
     match auth_service.login(u.username, u.password_hash) {
       Ok(t) => assert!(auth_service.verify_token(&t)),
@@ -105,7 +106,10 @@ mod tests {
   #[test]
   fn verify_token_wrong_token_fails() {
     let u = User::get_dummy();
-    let auth_service = SimpleAuthService::get_default_instance();
+    let user_repository = SimpleDatabase::new();
+    let token_service = SimpleTokenService::new(ONE_DAY);
+    let auth_service =
+      SimpleAuthService::new(&token_service, &user_repository);
     auth_service.register(&u);
     match auth_service.login(u.username, u.password_hash) {
       Ok(_) => assert!(
@@ -119,7 +123,10 @@ mod tests {
   #[test]
   fn logout_works() {
     let u = User::get_dummy();
-    let auth_service = SimpleAuthService::get_default_instance();
+    let user_repository = SimpleDatabase::new();
+    let token_service = SimpleTokenService::new(ONE_DAY);
+    let auth_service =
+      SimpleAuthService::new(&token_service, &user_repository);
     auth_service.register(&u);
     let t = auth_service.login(u.username, u.password_hash).unwrap();
     assert!(auth_service.logout(&t).is_ok());

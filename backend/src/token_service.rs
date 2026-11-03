@@ -9,8 +9,3 @@ pub trait TokenService {
   fn verify_token(&self, token_str: &str) -> bool;
   fn return_token(&self, token_str: &str);
 }
-
-#[deprecated]
-pub fn get_default() -> &'static impl TokenService {
-  return SimpleTokenService::get_default_instance();
-}

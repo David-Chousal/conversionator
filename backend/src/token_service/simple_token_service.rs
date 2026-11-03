@@ -1,7 +1,4 @@
-use std::{
-  collections::HashMap,
-  sync::{OnceLock, RwLock},
-};
+use std::{collections::HashMap, sync::RwLock};
 
 use crate::types::*;
 
@@ -32,13 +29,11 @@ pub struct SimpleTokenService {
 }
 
 impl SimpleTokenService {
-  #[deprecated]
-  pub fn get_default_instance() -> &'static Self {
-    static INSTANCE: OnceLock<SimpleTokenService> = OnceLock::new();
-    return INSTANCE.get_or_init(|| SimpleTokenService {
-      default_lifetime: chrono::Duration::days(1),
+  pub fn new(default_lifetime: chrono::Duration) -> Self {
+    SimpleTokenService {
+      default_lifetime,
       active_tokens: RwLock::new(HashMap::new()),
-    });
+    }
   }
 
   fn generate_token_string() -> String {
@@ -127,6 +122,8 @@ mod tests {
 
   use super::*;
 
+  const ONE_DAY: TimeDelta = TimeDelta::days(1);
+
   #[test]
   fn generate_token_string_works() {
     let s = SimpleTokenService::generate_token_string();
@@ -175,7 +172,7 @@ mod tests {
   #[test]
   fn take_and_return_token_works() {
     let user = User::get_dummy();
-    let token_service = SimpleTokenService::get_default_instance();
+    let token_service = SimpleTokenService::new(ONE_DAY);
 
     let token_str = token_service.generate_token(&user);
     assert!(token_service.verify_token(&token_str));
@@ -186,7 +183,7 @@ mod tests {
   #[test]
   fn take_and_return_multiple_tokens_works() {
     let user = User::get_dummy();
-    let token_service = SimpleTokenService::get_default_instance();
+    let token_service = SimpleTokenService::new(ONE_DAY);
 
     let t1 = token_service.generate_token(&user);
     assert!(token_service.verify_token(&t1));
@@ -217,7 +214,7 @@ mod tests {
   #[test]
   fn token_timeout_works() {
     let user = User::get_dummy();
-    let token_service = SimpleTokenService::get_default_instance();
+    let token_service = SimpleTokenService::new(ONE_DAY);
 
     let token = token_service
       .generate_token_with_lifetime(&user, TimeDelta::days(1));
