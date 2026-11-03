@@ -114,6 +114,15 @@ impl TokenService for SimpleTokenService {
     }
     self.active_tokens.write().unwrap().remove(token_str);
   }
+
+  fn get_role(&self, token_str: &str) -> Option<UserRole> {
+    self
+      .active_tokens
+      .read()
+      .unwrap_or_else(|e| e.into_inner())
+      .get(token_str)
+      .map(|t| t.role)
+  }
 }
 
 #[cfg(test)]

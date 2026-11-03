@@ -8,4 +8,6 @@ pub trait TokenService {
   fn generate_token(&self, user: &User) -> String;
   fn verify_token(&self, token_str: &str) -> bool;
   fn return_token(&self, token_str: &str);
+
+  fn get_role(&self, token_str: &str) -> Option<UserRole>;
 }
