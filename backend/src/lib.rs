@@ -1,4 +1,4 @@
-pub mod app;
+pub mod app_container;
 pub mod auth_service;
 pub mod database;
 pub mod external_source_adapter;
