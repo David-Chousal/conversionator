@@ -32,6 +32,7 @@ pub struct SimpleTokenService {
 }
 
 impl SimpleTokenService {
+  #[deprecated]
   pub fn get_default_instance() -> &'static Self {
     static INSTANCE: OnceLock<SimpleTokenService> = OnceLock::new();
     return INSTANCE.get_or_init(|| SimpleTokenService {

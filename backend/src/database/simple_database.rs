@@ -45,6 +45,7 @@ impl std::fmt::Display for SyncError {
 }
 
 impl SimpleDatabase {
+  #[deprecated]
   pub fn get_default_instance() -> &'static Self {
     static INSTANCE: LazyLock<SimpleDatabase> =
       LazyLock::new(SimpleDatabase::new);

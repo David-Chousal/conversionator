@@ -7,6 +7,7 @@ pub trait UserRepository: Send + Sync {
   fn delete_by_id(&self, id: u128) -> Result<User, &str>;
 }
 
+#[deprecated]
 pub fn get_default() -> &'static dyn UserRepository {
   return SimpleDatabase::get_default_instance();
 }
