@@ -77,6 +77,14 @@ impl SimpleDatabase {
     };
     rmp_serde::encode::to_vec(&*data)
   }
+
+  pub fn as_user_repository<'a>(&'a self) -> &'a dyn UserRepository {
+    self as &dyn UserRepository
+  }
+
+  pub fn as_team_repository<'a>(&'a self) -> &'a dyn TeamRepository {
+    self as &dyn TeamRepository
+  }
 }
 
 impl UserRepository for SimpleDatabase {
@@ -148,9 +156,54 @@ impl TeamRepository for SimpleDatabase {
 
 #[cfg(test)]
 mod tests {
+  use std::collections::VecDeque;
+
+  use super::*;
 
   #[test]
   fn foo() {
     assert!(true);
+  }
+
+  // impl SimpleDatabase
+
+  #[test]
+  fn from_read_works() {
+    // create resources
+    let user = User::get_dummy();
+    let db = SimpleDatabase::new();
+    let mut buf = VecDeque::new();
+
+    // register user
+    db.as_user_repository().save(&user);
+
+    // write to VecDeque
+    if let Err(e) = db.write_to(&mut buf) {
+      panic!("error writing to buffer: {e}")
+    }
+
+    // verify from_read works
+    match SimpleDatabase::from_read(buf) {
+      Ok(db2) => {
+        assert!(db2.as_user_repository().get_by_id(0).is_some())
+      }
+      Err(e) => panic!("error reading from buffer: {e}"),
+    }
+  }
+
+  #[test]
+  fn write_to_works() {
+    // create resources
+    let user = User::get_dummy();
+    let db = SimpleDatabase::new();
+    let mut buf = VecDeque::new();
+
+    // register user
+    db.as_user_repository().save(&user);
+
+    // write to VecDeque
+    if let Err(e) = db.write_to(&mut buf) {
+      panic!("error writing to buffer: {e}")
+    }
   }
 }
