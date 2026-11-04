@@ -206,4 +206,34 @@ mod tests {
       panic!("error writing to buffer: {e}")
     }
   }
+
+  // impl UserRepository for SimpleDatabase
+
+  #[test]
+  fn save_user_works() {
+    // create resources
+    let user = User::get_dummy();
+    let db = SimpleDatabase::new();
+
+    // register user
+    db.as_user_repository().save(&user);
+
+    assert!(db.as_user_repository().get_by_id(user.id).is_some())
+  }
+
+  #[test]
+  fn get_by_username_works() {
+    // create resources
+    let user = User::get_dummy();
+    let db = SimpleDatabase::new();
+
+    // register user
+    db.as_user_repository().save(&user);
+
+    assert!(
+      db.as_user_repository()
+        .get_by_username(&user.username)
+        .is_some()
+    );
+  }
 }
