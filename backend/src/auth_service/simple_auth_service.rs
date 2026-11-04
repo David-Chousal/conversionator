@@ -1,4 +1,5 @@
 use crate::{
+  Component,
   auth_service::AuthService,
   database::UserRepository,
   token_service::{SimpleTokenService, TokenService},
@@ -25,6 +26,8 @@ impl<'a> SimpleAuthService<'a> {
     self.user_repository.save(user);
   }
 }
+
+impl Component for SimpleAuthService<'_> {}
 
 impl AuthService<u128> for SimpleAuthService<'_> {
   fn login(
