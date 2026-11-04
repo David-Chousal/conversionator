@@ -1,4 +1,4 @@
-use crate::{component::Component, types::*};
+use crate::{Component, types::*};
 
 mod simple_token_service;
 
