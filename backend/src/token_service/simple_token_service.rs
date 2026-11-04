@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::RwLock};
 
-use crate::types::*;
+use crate::{component::Component, types::*};
 
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use chrono::Utc;
@@ -87,6 +87,8 @@ impl SimpleTokenService {
       .retain(|_, v| v.expires > now);
   }
 }
+
+impl Component for SimpleTokenService {}
 
 impl TokenService for SimpleTokenService {
   fn generate_token(&self, user: &User) -> String {
