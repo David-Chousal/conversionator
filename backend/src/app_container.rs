@@ -1,4 +1,4 @@
-use std::sync::{Arc, OnceLock};
+use std::sync::Arc;
 
 use chrono::TimeDelta;
 
@@ -32,7 +32,7 @@ pub trait AppContainer {
 }
 
 pub struct CORAppContainer {
-  components: OnceLock<Vec<Arc<dyn Component>>>,
+  components: Vec<Arc<dyn Component>>,
   db: Arc<SimpleDatabase>,
   token_service: Arc<SimpleTokenService>,
   auth_service: Arc<SimpleAuthService>,
@@ -48,25 +48,26 @@ impl CORAppContainer {
       db.clone(),
     ));
 
+    let components = vec![
+      db.clone() as Arc<dyn Component>,
+      token_service.clone() as Arc<dyn Component>,
+      auth_service.clone() as Arc<dyn Component>,
+    ];
+
     let out = Self {
-      components: OnceLock::new(),
-      db: db.clone(),
-      token_service: token_service.clone(),
-      auth_service: auth_service.clone(),
+      components,
+      db,
+      token_service,
+      auth_service,
     };
 
-    out.register_components(vec![db, token_service, auth_service]); // shut up
     out
-  }
-
-  fn register_components(&self, components: Vec<Arc<dyn Component>>) {
-    self.components.get_or_init(|| components);
   }
 }
 
 impl AppContainer for CORAppContainer {
   fn get_components(&self) -> Vec<Arc<dyn Component>> {
-    self.components.get().unwrap().clone()
+    self.components.clone()
   }
 
   fn get_token_service(&self) -> Arc<dyn TokenService> {
