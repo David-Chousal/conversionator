@@ -10,19 +10,11 @@ use crate::{
 };
 
 pub trait AppContainer {
-  fn get_components(&self) -> Vec<Arc<dyn Component>>;
+  fn init(&self);
 
-  fn init(&self) {
-    self.get_components().iter().for_each(|c| c.init());
-  }
+  fn periodic(&self);
 
-  fn periodic(&self) {
-    self.get_components().iter().for_each(|c| c.periodic());
-  }
-
-  fn cleanup(&self) {
-    self.get_components().iter().for_each(|c| c.cleanup());
-  }
+  fn cleanup(&self);
 
   fn get_token_service(&self) -> Arc<dyn TokenService>;
   fn get_auth_service(&self) -> Arc<dyn AuthService<u128>>;
@@ -66,10 +58,6 @@ impl CORAppContainer {
 }
 
 impl AppContainer for CORAppContainer {
-  fn get_components(&self) -> Vec<Arc<dyn Component>> {
-    self.components.clone()
-  }
-
   fn get_token_service(&self) -> Arc<dyn TokenService> {
     self.token_service.clone()
   }
@@ -84,5 +72,17 @@ impl AppContainer for CORAppContainer {
 
   fn get_team_repository(&self) -> Arc<dyn TeamRepository> {
     self.db.clone()
+  }
+
+  fn init(&self) {
+    self.components.iter().for_each(|c| c.init());
+  }
+
+  fn periodic(&self) {
+    self.components.iter().for_each(|c| c.periodic());
+  }
+
+  fn cleanup(&self) {
+    self.components.iter().for_each(|c| c.cleanup());
   }
 }
