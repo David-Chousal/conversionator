@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::{
   Component,
   auth_service::AuthService,
@@ -6,15 +8,15 @@ use crate::{
   types::User,
 };
 
-pub struct SimpleAuthService<'a> {
-  token_service: &'a dyn TokenService,
-  user_repository: &'a dyn UserRepository,
+pub struct SimpleAuthService {
+  token_service: Arc<dyn TokenService>,
+  user_repository: Arc<dyn UserRepository>,
 }
 
-impl<'a> SimpleAuthService<'a> {
+impl SimpleAuthService {
   pub fn new(
-    token_service: &'a dyn TokenService,
-    user_repository: &'a dyn UserRepository,
+    token_service: Arc<dyn TokenService>,
+    user_repository: Arc<dyn UserRepository>,
   ) -> Self {
     Self {
       token_service,
@@ -27,9 +29,9 @@ impl<'a> SimpleAuthService<'a> {
   }
 }
 
-impl Component for SimpleAuthService<'_> {}
+impl Component for SimpleAuthService {}
 
-impl AuthService<u128> for SimpleAuthService<'_> {
+impl AuthService<u128> for SimpleAuthService {
   fn login(
     &self,
     username: String,
@@ -68,10 +70,10 @@ mod tests {
   #[test]
   fn login_works() {
     let u = User::get_dummy();
-    let user_repository = SimpleDatabase::new();
-    let token_service = SimpleTokenService::new(ONE_DAY);
+    let user_repository = Arc::new(SimpleDatabase::new());
+    let token_service = Arc::new(SimpleTokenService::new(ONE_DAY));
     let auth_service =
-      SimpleAuthService::new(&token_service, &user_repository);
+      SimpleAuthService::new(token_service, user_repository);
     auth_service.register(&u);
     match auth_service.login(u.username, u.password_hash) {
       Ok(t) => assert!(auth_service.token_service.verify_token(&t)),
@@ -82,10 +84,10 @@ mod tests {
   #[test]
   fn login_with_wrong_password_fails() {
     let u = User::get_dummy();
-    let user_repository = SimpleDatabase::new();
-    let token_service = SimpleTokenService::new(ONE_DAY);
+    let user_repository = Arc::new(SimpleDatabase::new());
+    let token_service = Arc::new(SimpleTokenService::new(ONE_DAY));
     let auth_service =
-      SimpleAuthService::new(&token_service, &user_repository);
+      SimpleAuthService::new(token_service, user_repository);
     auth_service.register(&u);
     assert!(
       auth_service.login(u.username, u.password_hash + 1).is_err()
@@ -95,10 +97,10 @@ mod tests {
   #[test]
   fn verify_token_works() {
     let u = User::get_dummy();
-    let user_repository = SimpleDatabase::new();
-    let token_service = SimpleTokenService::new(ONE_DAY);
+    let user_repository = Arc::new(SimpleDatabase::new());
+    let token_service = Arc::new(SimpleTokenService::new(ONE_DAY));
     let auth_service =
-      SimpleAuthService::new(&token_service, &user_repository);
+      SimpleAuthService::new(token_service, user_repository);
     auth_service.register(&u);
     match auth_service.login(u.username, u.password_hash) {
       Ok(t) => assert!(auth_service.verify_token(&t)),
@@ -109,10 +111,10 @@ mod tests {
   #[test]
   fn verify_token_wrong_token_fails() {
     let u = User::get_dummy();
-    let user_repository = SimpleDatabase::new();
-    let token_service = SimpleTokenService::new(ONE_DAY);
+    let user_repository = Arc::new(SimpleDatabase::new());
+    let token_service = Arc::new(SimpleTokenService::new(ONE_DAY));
     let auth_service =
-      SimpleAuthService::new(&token_service, &user_repository);
+      SimpleAuthService::new(token_service, user_repository);
     auth_service.register(&u);
     match auth_service.login(u.username, u.password_hash) {
       Ok(_) => assert!(
@@ -126,10 +128,10 @@ mod tests {
   #[test]
   fn logout_works() {
     let u = User::get_dummy();
-    let user_repository = SimpleDatabase::new();
-    let token_service = SimpleTokenService::new(ONE_DAY);
+    let user_repository = Arc::new(SimpleDatabase::new());
+    let token_service = Arc::new(SimpleTokenService::new(ONE_DAY));
     let auth_service =
-      SimpleAuthService::new(&token_service, &user_repository);
+      SimpleAuthService::new(token_service, user_repository);
     auth_service.register(&u);
     let t = auth_service.login(u.username, u.password_hash).unwrap();
     assert!(auth_service.logout(&t).is_ok());
