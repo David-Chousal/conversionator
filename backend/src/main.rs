@@ -1,4 +1,6 @@
+use backend::app::App;
+
 #[tokio::main]
-async fn main() {
-  println!("Hello, world!");
+async fn main() -> tokio::io::Result<()> {
+  App::new().run()
 }
