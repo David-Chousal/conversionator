@@ -38,6 +38,15 @@ pub enum LogoutError {
   InvalidToken,
 }
 
+impl IntoResponse for LogoutError {
+  fn into_response(self) -> axum::response::Response {
+    Response::builder()
+      .status(401)
+      .body(Body::from("Logout error"))
+      .unwrap()
+  }
+}
+
 pub trait AuthServiceApi {
   /// takes login credentials and returns token or error
   async fn login(

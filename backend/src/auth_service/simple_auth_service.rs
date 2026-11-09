@@ -9,13 +9,13 @@ use crate::{
 };
 
 pub struct SimpleAuthService {
-  token_service: Arc<dyn TokenService>,
+  token_service: Arc<dyn TokenService + Send + Sync>,
   user_repository: Arc<dyn UserRepository>,
 }
 
 impl SimpleAuthService {
   pub fn new(
-    token_service: Arc<dyn TokenService>,
+    token_service: Arc<dyn TokenService + Send + Sync>,
     user_repository: Arc<dyn UserRepository>,
   ) -> Self {
     Self {

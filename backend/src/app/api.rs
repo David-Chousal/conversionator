@@ -1,9 +1,20 @@
-use std::sync::Arc;
+use std::{
+  net::{IpAddr, SocketAddr},
+  sync::Arc,
+};
 
 use axum::{
-  Json, Router, extract::State, handler::Handler,
-  response::IntoResponse, routing::post,
+  Json, Router,
+  extract::State,
+  handler::Handler,
+  response::IntoResponse,
+  routing::post,
+  serve::{Listener, Serve},
 };
+use hyper::{body::Incoming, server::conn::http2};
+use hyper_util::rt::{TokioExecutor, TokioIo};
+use tokio::io;
+use tower::Service as _;
 
 use crate::{
   app::api::auth_service::{AuthServiceApi, LoginError},
@@ -36,15 +47,49 @@ impl CorApi {
         auth_service,
         token_service,
       },
-      router: Router::<ApiState>::new(),
+      router: Self::setup_routes(),
     }
   }
 
-  fn setup_routes(&self, router: Router<ApiState>) -> Router {
-    // TODO extract this to a config file and a reader
-    router
-      .route("/auth/login", post(Self::handle_login))
-      .with_state(self.state.clone()) // just a couple pointers dont fuss
+  fn setup_routes() -> Router<ApiState> {
+    // TODO extract this logic to a config file and a reader
+
+    let auth_router = Router::new()
+      .route("/login", post(Self::handle_login))
+      .route("/logout", post(Self::handle_logout));
+
+    Router::new().nest("/auth", auth_router)
+  }
+
+  pub async fn serve(
+    &self,
+    sockaddr: SocketAddr,
+  ) -> Result<(), tokio::io::Error> {
+    let listener = tokio::net::TcpListener::bind(sockaddr).await?;
+    loop {
+      let (stream, addr) = listener.accept().await?;
+      let io = TokioIo::new(stream);
+      let tower_service = self
+        .router
+        .clone()
+        .with_state(self.state.clone())
+        .into_service();
+
+      tokio::task::spawn(async move {
+        let hyper_service = hyper::service::service_fn(
+          move |req: hyper::Request<Incoming>| {
+            tower_service.clone().call(req)
+          },
+        );
+
+        if let Err(e) = http2::Builder::new(TokioExecutor::new())
+          .serve_connection(io, hyper_service)
+          .await
+        {
+          eprintln!("Error serving connection from {addr}: {e}");
+        }
+      });
+    }
   }
 
   async fn handle_login(
@@ -52,6 +97,13 @@ impl CorApi {
     params: Json<auth_service::LoginParams>,
   ) -> impl IntoResponse {
     Self::login(state, params).await
+  }
+
+  async fn handle_logout(
+    state: State<ApiState>,
+    params: Json<auth_service::LogoutParams>,
+  ) -> impl IntoResponse {
+    Self::logout(state, params).await
   }
 }
 
