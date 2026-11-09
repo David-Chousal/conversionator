@@ -1,7 +1,5 @@
 use std::{net::SocketAddr, sync::Arc};
 
-use axum::{Router, routing::get};
-
 pub mod api;
 
 mod app_config;
@@ -9,10 +7,10 @@ pub use app_config::AppConfig;
 use chrono::TimeDelta;
 
 use crate::{
-  app::api::{CorApi, auth_service},
-  auth_service::{AuthService, SimpleAuthService},
+  app::api::CorApi,
+  auth_service::SimpleAuthService,
   database::{SimpleDatabase, UserRepository},
-  token_service::{self, SimpleTokenService},
+  token_service::SimpleTokenService,
 };
 
 pub struct App {

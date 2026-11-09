@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use axum::{
   Json, body::Body, extract::State, http::Response,
   response::IntoResponse,

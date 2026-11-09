@@ -1,22 +1,13 @@
-use std::{
-  net::{IpAddr, SocketAddr},
-  sync::Arc,
-};
+use std::{net::SocketAddr, sync::Arc};
 
 use axum::{
   Json, Router,
   extract::State,
-  handler::Handler,
   response::IntoResponse,
   routing::{get, post},
-  serve::{Listener, Serve},
 };
-use hyper::{
-  body::Incoming,
-  server::conn::{http1, http2},
-};
-use hyper_util::rt::{TokioExecutor, TokioIo};
-use tokio::io;
+use hyper::{body::Incoming, server::conn::http1};
+use hyper_util::rt::TokioIo;
 use tower::Service as _;
 
 use crate::{
