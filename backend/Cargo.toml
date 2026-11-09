@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum = "0.8.9"
+axum = { version = "0.8.9", features = ["macros"] }
 base64 = "0.22"
 chrono = { version = "0.4.45", features = ["serde"] }
 delegate = "0.13.5"
