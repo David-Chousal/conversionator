@@ -45,6 +45,7 @@ impl CorApi {
     }
   }
 
+  /// defines api routes and respective handlers
   fn setup_routes() -> Router<ApiState> {
     // TODO extract this logic to a config file and a reader
 
