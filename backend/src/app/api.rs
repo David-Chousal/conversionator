@@ -8,10 +8,13 @@ use axum::{
   extract::State,
   handler::Handler,
   response::IntoResponse,
-  routing::post,
+  routing::{get, post},
   serve::{Listener, Serve},
 };
-use hyper::{body::Incoming, server::conn::http2};
+use hyper::{
+  body::Incoming,
+  server::conn::{http1, http2},
+};
 use hyper_util::rt::{TokioExecutor, TokioIo};
 use tokio::io;
 use tower::Service as _;
@@ -58,7 +61,12 @@ impl CorApi {
       .route("/login", post(Self::handle_login))
       .route("/logout", post(Self::handle_logout));
 
-    Router::new().nest("/auth", auth_router)
+    let foo_router =
+      Router::new().route("/", get(async || "Hello world!"));
+
+    Router::new()
+      .nest("/auth", auth_router)
+      .nest("/foo", foo_router)
   }
 
   pub async fn serve(
@@ -82,7 +90,7 @@ impl CorApi {
           },
         );
 
-        if let Err(e) = http2::Builder::new(TokioExecutor::new())
+        if let Err(e) = http1::Builder::new()
           .serve_connection(io, hyper_service)
           .await
         {
