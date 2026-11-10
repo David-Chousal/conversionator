@@ -5,7 +5,6 @@ use std::{
 };
 
 use crate::{
-  Component,
   database::{UserRepository, team_repository::TeamRepository},
   types::{Team, User},
 };
@@ -87,8 +86,6 @@ impl SimpleDatabase {
     self as &dyn TeamRepository
   }
 }
-
-impl Component for SimpleDatabase {}
 
 impl UserRepository for SimpleDatabase {
   fn save(&self, user: &User) -> Option<User> {

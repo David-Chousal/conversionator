@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use crate::{
-  Component,
   auth_service::AuthService,
   database::UserRepository,
   token_service::{SimpleTokenService, TokenService},
@@ -28,8 +27,6 @@ impl SimpleAuthService {
     self.user_repository.save(user);
   }
 }
-
-impl Component for SimpleAuthService {}
 
 impl AuthService<u128> for SimpleAuthService {
   fn login(

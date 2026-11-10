@@ -2,9 +2,7 @@ mod simple_auth_service;
 
 pub use simple_auth_service::SimpleAuthService;
 
-use crate::Component;
-
-pub trait AuthService<P>: Component {
+pub trait AuthService<P> {
   fn login(
     &self,
     username: String,
