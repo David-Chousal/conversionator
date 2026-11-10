@@ -1,9 +1,9 @@
 use axum::{
-  Json, body::Body, extract::State, http::Response,
-  response::IntoResponse,
+  Json, Router, body::Body, extract::State, http::Response,
+  response::IntoResponse, routing::post,
 };
 
-use crate::app::api;
+use crate::app::api::ApiState;
 
 #[derive(serde::Deserialize)]
 pub struct LoginParams {
@@ -45,16 +45,28 @@ impl IntoResponse for LogoutError {
   }
 }
 
-pub trait AuthServiceApi {
-  /// takes login credentials and returns token or error
-  async fn login(
-    state: State<api::ApiState>,
-    params_json: Json<LoginParams>,
-  ) -> Result<String, LoginError>;
+pub fn make_router() -> Router<ApiState> {
+  Router::new()
+    .route("/login", post(handle_login))
+    .route("/logout", post(handle_logout))
+}
 
-  /// takes token and logs out user, or returns error
-  async fn logout(
-    state: State<api::ApiState>,
-    params_json: Json<LogoutParams>,
-  ) -> Result<(), LogoutError>;
+async fn handle_login(
+  State(state): State<ApiState>,
+  Json(params): Json<LoginParams>,
+) -> impl IntoResponse {
+  state
+    .auth_service
+    .login(params.username, params.password_hash)
+    .map_err(|_| LoginError::InvalidCredentials) // TODO fix this and logout to propogate errors upwards correctly
+}
+
+async fn handle_logout(
+  State(state): State<self::ApiState>,
+  Json(params): Json<LogoutParams>,
+) -> Result<(), LogoutError> {
+  state
+    .auth_service
+    .logout(&params.token)
+    .map_err(|_| LogoutError::InvalidToken)
 }

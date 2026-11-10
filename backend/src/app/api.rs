@@ -1,20 +1,11 @@
 use std::{net::SocketAddr, sync::Arc};
 
-use axum::{
-  Json, Router,
-  extract::State,
-  response::IntoResponse,
-  routing::{get, post},
-};
+use axum::{Router, routing::get};
 use hyper::{body::Incoming, server::conn::http1};
 use hyper_util::rt::TokioIo;
 use tower::Service as _;
 
-use crate::{
-  app::api::auth::{AuthServiceApi, LoginError},
-  auth_service::AuthService,
-  token_service::TokenService,
-};
+use crate::{auth_service::AuthService, token_service::TokenService};
 
 pub mod auth;
 
@@ -47,11 +38,7 @@ impl CorApi {
 
   /// defines api routes and respective handlers
   fn setup_routes() -> Router<ApiState> {
-    // TODO extract this logic to a config file and a reader
-
-    let auth_router = Router::new()
-      .route("/login", post(Self::handle_login))
-      .route("/logout", post(Self::handle_logout));
+    let auth_router = auth::make_router();
 
     let foo_router =
       Router::new().route("/", get(async || "Hello world!"));
@@ -91,42 +78,4 @@ impl CorApi {
       });
     }
   }
-
-  async fn handle_login(
-    state: State<self::ApiState>,
-    params: Json<auth::LoginParams>,
-  ) -> impl IntoResponse {
-    Self::login(state, params).await
-  }
-
-  async fn handle_logout(
-    state: State<ApiState>,
-    params: Json<auth::LogoutParams>,
-  ) -> impl IntoResponse {
-    Self::logout(state, params).await
-  }
 }
-
-impl AuthServiceApi for CorApi {
-  async fn login(
-    State(state): State<self::ApiState>,
-    Json(params): Json<auth::LoginParams>,
-  ) -> Result<String, auth::LoginError> {
-    state
-      .auth_service
-      .login(params.username, params.password_hash)
-      .map_err(|_| LoginError::InvalidCredentials) // TODO fix this and logout to propogate errors upwards correctly
-  }
-
-  async fn logout(
-    State(state): State<self::ApiState>,
-    Json(params): Json<auth::LogoutParams>,
-  ) -> Result<(), auth::LogoutError> {
-    state
-      .auth_service
-      .logout(&params.token)
-      .map_err(|_| auth::LogoutError::InvalidToken)
-  }
-}
-
-impl TeamServiceApi for CorApi {}
