@@ -9,8 +9,6 @@ use crate::{auth_service::AuthService, token_service::TokenService};
 
 pub mod auth;
 
-pub trait TeamServiceApi {}
-
 #[derive(Clone)]
 pub struct ApiState {
   pub auth_service: Arc<dyn AuthService<u128> + Send + Sync>,
