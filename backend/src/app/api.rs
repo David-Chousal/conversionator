@@ -11,12 +11,12 @@ use hyper_util::rt::TokioIo;
 use tower::Service as _;
 
 use crate::{
-  app::api::auth_service::{AuthServiceApi, LoginError},
+  app::api::auth::{AuthServiceApi, LoginError},
   auth_service::AuthService,
   token_service::TokenService,
 };
 
-pub mod auth_service;
+pub mod auth;
 
 pub trait TeamServiceApi {}
 
@@ -94,14 +94,14 @@ impl CorApi {
 
   async fn handle_login(
     state: State<self::ApiState>,
-    params: Json<auth_service::LoginParams>,
+    params: Json<auth::LoginParams>,
   ) -> impl IntoResponse {
     Self::login(state, params).await
   }
 
   async fn handle_logout(
     state: State<ApiState>,
-    params: Json<auth_service::LogoutParams>,
+    params: Json<auth::LogoutParams>,
   ) -> impl IntoResponse {
     Self::logout(state, params).await
   }
@@ -110,8 +110,8 @@ impl CorApi {
 impl AuthServiceApi for CorApi {
   async fn login(
     State(state): State<self::ApiState>,
-    Json(params): Json<auth_service::LoginParams>,
-  ) -> Result<String, auth_service::LoginError> {
+    Json(params): Json<auth::LoginParams>,
+  ) -> Result<String, auth::LoginError> {
     state
       .auth_service
       .login(params.username, params.password_hash)
@@ -120,12 +120,12 @@ impl AuthServiceApi for CorApi {
 
   async fn logout(
     State(state): State<self::ApiState>,
-    Json(params): Json<auth_service::LogoutParams>,
-  ) -> Result<(), auth_service::LogoutError> {
+    Json(params): Json<auth::LogoutParams>,
+  ) -> Result<(), auth::LogoutError> {
     state
       .auth_service
       .logout(&params.token)
-      .map_err(|_| auth_service::LogoutError::InvalidToken)
+      .map_err(|_| auth::LogoutError::InvalidToken)
   }
 }
 
