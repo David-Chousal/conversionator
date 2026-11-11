@@ -33,11 +33,15 @@ curl -H 'Authorization: Bearer YOUR_READ_KEY' 'http://localhost:3000/api/v1/metr
 | `GET /api/v1/sources` | Read key | Connected data sources |
 | `GET /api/v1/campaigns` | Read key | Campaigns; optional `sourceId` |
 | `GET /api/v1/metrics` | Read key | Daily rows and pagination |
+| `GET /api/v1/metrics/csv` | Read key | Matching daily rows as downloadable CSV |
+| `POST /api/v1/metrics/csv` | Write key | Validate and import CSV rows |
 | `GET /api/v1/summary` | Read key | Totals for spend, clicks, engagements, impressions, conversions |
 | `GET /api/v1/sync-runs` | Read key | Import history and errors |
 | `POST /api/v1/integrations/demo-ads/sync` | Write key | Pull the simulated provider into SQLite |
 
 `metrics` and `summary` accept `from`, `to`, `sourceId`, and `campaignId`. `metrics` also accepts `limit` (1–500, default 100) and `offset` (default 0). Dates use `YYYY-MM-DD`. Money is stored as integer cents (`spendCents`); `spendUsd` is included for display. Summary totals cover all matching rows, independent of pagination.
+
+The CSV download accepts the same filters and pagination as `metrics`. It returns at most 500 rows per request, with `X-Total-Count`, `X-Limit`, and `X-Offset` response headers. Request the next page with a larger `offset` until all rows are read. Its columns are `date,campaignId,campaign,spendCents,clicks,engagements,impressions,conversions`.
 
 Examples:
 
@@ -48,6 +52,47 @@ curl -H 'Authorization: Bearer YOUR_READ_KEY' 'http://localhost:3000/api/v1/summ
 ```
 
 A missing or invalid key returns HTTP 401. Invalid filters return HTTP 400. Generate a separate key for each teammate, and revoke a key by label with `node scripts/db.mjs revoke-key teammate-read`.
+
+## Upload and download CSV
+
+The [sample CSV](./sample-metrics.csv) can be imported with a write key. From `web/`:
+
+```sh
+node scripts/db.mjs create-key csv-importer --write
+curl -X POST 'http://localhost:3000/api/v1/metrics/csv' \
+  -H 'Authorization: Bearer YOUR_WRITE_KEY' \
+  -H 'Content-Type: text/csv' \
+  --data-binary @docs/sample-metrics.csv
+```
+
+The required columns are `date,campaignId,campaign,spendCents,clicks,engagements`. Optional `impressions` and `conversions` default to zero. Spend is in cents, so `12500` means $125.00. The CSV must be UTF-8, at most 1 MB, and contain no more than 10,000 data rows. A repeated campaign/date updates that record. An invalid file returns HTTP 400 without importing any rows. Uploaded campaigns appear under the `src_csv_upload` data source; successful uploads appear in `/api/v1/sync-runs`.
+
+```sh
+curl -H 'Authorization: Bearer YOUR_READ_KEY' \
+  'http://localhost:3000/api/v1/metrics/csv?sourceId=src_csv_upload&limit=500&offset=0' \
+  -o metrics.csv
+```
+
+The CSV download is intended as a data feed. Importing an exported file back into the same database creates records under the CSV Upload source, so it is not a full database backup.
+
+## Connect the COR app
+
+Keep the API key on the server. Set `COR_API_BASE_URL` to the API host (for local development, `http://127.0.0.1:3000`) and `COR_API_KEY` to a read key in the app server's environment. Do not put the key in a `NEXT_PUBLIC_` variable or browser code. A server-side loader can call the JSON endpoint like this:
+
+```ts
+const response = await fetch(
+  `${process.env.COR_API_BASE_URL}/api/v1/metrics?from=2026-09-01&limit=100`,
+  { headers: { Authorization: `Bearer ${process.env.COR_API_KEY}` }, cache: "no-store" },
+);
+if (!response.ok) throw new Error(`COR API returned ${response.status}`);
+const { data, total } = await response.json();
+```
+
+For a CSV feed, call `/api/v1/metrics/csv` from the same server-side code and use `await response.text()` instead of `response.json()`. To upload, send `POST` with `Content-Type: text/csv`, a write key, and the CSV text as the body. The current COR pages still use their existing mock loader; a teammate can replace the relevant page loader with this server-side call. If the UI and API run in the same Next.js process, the server can also read through the database module directly.
+
+## Can another person connect while the database is local?
+
+Yes, if they can reach the **API server** on the computer hosting SQLite. They do not connect directly to the `.sqlite3` file. `localhost` from a teammate's computer refers to their computer, so they must use the host computer's LAN IP or a deployed HTTPS domain. For a same-network demo, start Next.js with `npm run dev -- --hostname 0.0.0.0`, allow the port through the host firewall, and give teammates `http://HOST_LAN_IP:3000` plus individual read keys. For access outside that network, deploy the API on a reachable host with persistent storage and HTTPS. Keep the SQLite file on that host, set `COR_DB_PATH` there, and issue keys on that same host. A local database alone does not make the endpoint reachable over the internet.
 
 ## Demonstrate an external API import
 

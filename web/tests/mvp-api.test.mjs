@@ -10,6 +10,7 @@ const { createApiKey, getDb, seedDemo, getSummary, keyHasScope, parseFilters } =
 const metricsRoute = await import("../src/app/api/v1/metrics/route.js");
 const summaryRoute = await import("../src/app/api/v1/summary/route.js");
 const syncRoute = await import("../src/app/api/v1/integrations/demo-ads/sync/route.js");
+const csvRoute = await import("../src/app/api/v1/metrics/csv/route.js");
 const { syncDemoProvider } = await import("../src/lib/server/demo-sync.mjs");
 
 const db = getDb();
@@ -66,4 +67,32 @@ test("failed provider sync leaves saved metrics intact and logs failure", async 
   const after = db.prepare("SELECT spend_cents FROM daily_metrics WHERE campaign_id='camp_spring' AND metric_date='2026-09-01'").get().spend_cents;
   assert.equal(after, before);
   assert.equal(db.prepare("SELECT status FROM sync_runs ORDER BY id DESC LIMIT 1").get().status, "failed");
+});
+
+test("CSV endpoint imports rows with a write key and exports them with a read key", async () => {
+  const csv = 'date,campaignId,campaign,spendCents,clicks,engagements\r\n2026-10-01,csv-test,"Launch, Phase 2",1200,15,23\r\n';
+  const url = "http://localhost/api/v1/metrics/csv";
+  const upload = await csvRoute.POST(new Request(url, {
+    method: "POST", headers: { Authorization: `Bearer ${writeKey}`, "Content-Type": "text/csv" }, body: csv,
+  }));
+  assert.equal(upload.status, 201);
+  assert.equal((await upload.json()).rowsImported, 1);
+  const download = csvRoute.GET(request(`${url}?sourceId=src_csv_upload`, readKey));
+  assert.equal(download.status, 200);
+  assert.equal(download.headers.get("X-Total-Count"), "1");
+  assert.match(await download.text(), /"Launch, Phase 2",1200,15,23,0,0/);
+});
+
+test("CSV endpoint rejects bad rows without changing saved data", async () => {
+  const url = "http://localhost/api/v1/metrics/csv";
+  const before = db.prepare("SELECT COUNT(*) AS count FROM daily_metrics").get().count;
+  const bad = "date,campaignId,campaign,spendCents,clicks,engagements\n2026-10-02,valid,Valid,100,5,6\n2026-02-30,bad,Bad,100,5,6\n";
+  const upload = await csvRoute.POST(new Request(url, {
+    method: "POST", headers: { Authorization: `Bearer ${writeKey}`, "Content-Type": "text/csv" }, body: bad,
+  }));
+  assert.equal(upload.status, 400);
+  assert.equal(db.prepare("SELECT COUNT(*) AS count FROM daily_metrics").get().count, before);
+  assert.equal((await csvRoute.POST(new Request(url, {
+    method: "POST", headers: { Authorization: `Bearer ${readKey}`, "Content-Type": "text/csv" }, body: bad,
+  }))).status, 401);
 });
