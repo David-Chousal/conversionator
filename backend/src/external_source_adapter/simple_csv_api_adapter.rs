@@ -1,14 +1,32 @@
+use std::sync::Arc;
+
 use hyper::{Request, body::Body};
 
-use crate::external_source_adapter::ExternalSourceAdapter;
+use crate::external_source_adapter::{
+  ExternalSourceAdapter, LocalCache,
+};
+
+pub struct SimpleLocalCache {}
+
+impl SimpleLocalCache {
+  pub fn new() -> Self {
+    Self {}
+  }
+}
+
+impl LocalCache for SimpleLocalCache {}
 
 pub struct SimpleCsvApiAdapter {
   url: reqwest::Url,
+  local_cache: Arc<dyn LocalCache>,
 }
 
 impl SimpleCsvApiAdapter {
   pub fn new(uri: &reqwest::Url) -> Self {
-    Self { url: uri.clone() }
+    Self {
+      url: uri.clone(),
+      local_cache: Arc::new(SimpleLocalCache::new()),
+    }
   }
 }
 
@@ -20,9 +38,7 @@ impl ExternalSourceAdapter for SimpleCsvApiAdapter {
       .get(self.url.clone())
       .send()
       .await
-      .map_err(|e| format!("error fetching remote url: {e}"))?;
-
-    // let conn = hyper::client::conn::http1::Builder::new().handshake()
+      .map_err(|e| "error fetching remote url")?;
 
     Ok(())
   }
@@ -33,5 +49,15 @@ impl ExternalSourceAdapter for SimpleCsvApiAdapter {
 
   fn data_bytes(&self) -> Vec<u8> {
     todo!()
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn foo() {
+    ()
   }
 }

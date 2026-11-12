@@ -9,3 +9,5 @@ pub trait ExternalSourceAdapter {
   fn status(&self) -> ExternalSourceStatus;
   fn data_bytes(&self) -> Vec<u8>;
 }
+
+pub trait LocalCache {}
