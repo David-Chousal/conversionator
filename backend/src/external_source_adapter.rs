@@ -1,6 +1,8 @@
 mod simple_csv_api_adapter;
+mod sqlite_database_adapter;
 
 pub use simple_csv_api_adapter::SimpleCsvApiAdapter;
+pub use sqlite_database_adapter::SQLiteDatabaseAdapter
 
 pub struct ExternalSourceStatus;
 
