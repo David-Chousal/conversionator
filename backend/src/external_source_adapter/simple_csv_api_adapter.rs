@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
-use hyper::{Request, body::Body};
+use hyper::Method;
+use reqwest::{Request, RequestBuilder};
 
 use crate::external_source_adapter::{
   ExternalSourceAdapter, LocalCache,
@@ -32,13 +33,15 @@ impl SimpleCsvApiAdapter {
 
 impl ExternalSourceAdapter for SimpleCsvApiAdapter {
   async fn sync(&self) -> Result<(), &'static str> {
-    let req = Request::builder().method("GET").body(()).unwrap();
     let client = reqwest::ClientBuilder::new().build().unwrap();
-    let res = client
-      .get(self.url.clone())
-      .send()
+    let req = client
+      .request(Method::GET, self.url.clone())
+      .build()
+      .unwrap();
+    let _res = client
+      .execute(req)
       .await
-      .map_err(|e| "error fetching remote url")?;
+      .map_err(|_e| "error fetching remote url")?;
 
     Ok(())
   }
