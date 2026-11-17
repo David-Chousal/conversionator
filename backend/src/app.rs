@@ -15,7 +15,7 @@ use crate::{
   external_source_adapter::SimpleApiAdapter,
   team_service::SimpleTeamService,
   token_service::SimpleTokenService,
-  types::{User, UserRole},
+  types::{ExternalDataCache, ExternalMetricRow, MetricsPayload, SourceConfig, User, UserRole},
 };
 
 pub struct App {
@@ -46,6 +46,40 @@ impl App {
     demo_user.username = String::from("foo@cor.dev");
     demo_user.email = String::from("foo@cor.dev");
     auth_service.register(&demo_user);
+
+    // Seed one demo source with a cached payload so the Connections page has a
+    // connected source to sync (not another dead "Connect" link) and /metrics
+    // has data before the first real sync. Clicking "Sync now" replaces these
+    // canned rows with the live 90 from the demo provider.
+    let now = chrono::Utc::now();
+    let demo_source = SourceConfig {
+      id: 1,
+      name: String::from("Google Ads (demo)"),
+      platform: String::from("google-ads"),
+      url: String::from("http://127.0.0.1:4001/v1/metrics"),
+      api_key: String::from("demo-source-key"),
+      sync_interval_seconds: 300,
+      last_synced_at: Some(now),
+    };
+    let demo_payload = MetricsPayload {
+      data: vec![
+        ExternalMetricRow {
+          date: String::from("2026-09-01"), campaign_id: String::from("spring-launch"), campaign: String::from("Spring Launch"),
+          spend_cents: 4500, clicks: 42, engagements: 10, impressions: 900, conversions: 3,
+        },
+        ExternalMetricRow {
+          date: String::from("2026-09-02"), campaign_id: String::from("spring-launch"), campaign: String::from("Spring Launch"),
+          spend_cents: 5000, clicks: 51, engagements: 12, impressions: 1100, conversions: 4,
+        },
+      ],
+    };
+    cache_repository.save_cache(&ExternalDataCache {
+      source_id: demo_source.id,
+      data: serde_json::to_string(&demo_payload).unwrap(),
+      cached_at: now,
+      expires_at: now + chrono::Duration::seconds(demo_source.sync_interval_seconds as i64),
+    });
+    source_repository.save(&demo_source);
 
     // Periodic external-source sync: every 30s, sync each source whose interval has elapsed
     // (the diagram's isSyncDue / updateSyncTimestamp story).
