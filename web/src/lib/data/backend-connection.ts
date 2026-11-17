@@ -1,6 +1,5 @@
 import { CorDataSource } from "./types";
 import type { Connection, ConnectionStatus, Platform, SyncResult, User } from "./types";
-import { cookies } from "next/headers";
 import { DataSourceError, type DataSourceErrorCode } from "./errors";
 import { campaignsFromSources, reportFromSources, type BackendMetricsSource } from "./backend-analytics";
 import { mockDataSource } from "./mock";
@@ -77,6 +76,9 @@ class HeadersBuilder {
 }
 
 async function token(): Promise<string> {
+  // Loaded lazily: this module is also pulled into client bundles via the data
+  // barrel, and a static next/headers import would break those bundles.
+  const { cookies } = await import("next/headers");
   const token = (await cookies()).get(TOKEN_COOKIE_NAME)?.value;
   if (!token) {
     throw new DataSourceError("needs_reconnect", "Please sign in again.");
