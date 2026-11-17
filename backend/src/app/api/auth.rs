@@ -8,7 +8,8 @@ use crate::app::api::ApiState;
 #[derive(serde::Deserialize)]
 pub struct LoginParams {
   pub username: String,
-  pub password_hash: u128,
+  /// Plain password; the backend hashes (bcrypt) and verifies server-side.
+  pub password: String,
 }
 
 #[derive(Debug)]
@@ -57,7 +58,7 @@ async fn handle_login(
 ) -> impl IntoResponse {
   state
     .auth_service
-    .login(params.username, params.password_hash)
+    .login(params.username, &params.password)
     .map_err(|_| LoginError::InvalidCredentials) // TODO fix this and logout to propogate errors upwards correctly
 }
 

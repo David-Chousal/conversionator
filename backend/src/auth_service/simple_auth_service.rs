@@ -28,14 +28,16 @@ impl SimpleAuthService {
   }
 }
 
-impl AuthService<u128> for SimpleAuthService {
+impl AuthService for SimpleAuthService {
   fn login(
     &self,
     username: String,
-    password_hash: u128,
+    password: &str,
   ) -> Result<String, &'static str> {
     if let Some(u) = self.user_repository.get_by_username(&username) {
-      if password_hash != u.password_hash {
+      let valid =
+        bcrypt::verify(password, &u.password_hash).map_err(|_| "Could not verify password")?;
+      if !valid {
         return Err("Password incorrect");
       }
       return Ok(self.token_service.generate_token(&u));
@@ -72,7 +74,7 @@ mod tests {
     let auth_service =
       SimpleAuthService::new(token_service, user_repository);
     auth_service.register(&u);
-    match auth_service.login(u.username, u.password_hash) {
+    match auth_service.login(u.username, "password") {
       Ok(t) => assert!(auth_service.token_service.verify_token(&t)),
       Err(e) => panic!("login failed: {}", e),
     };
@@ -87,7 +89,7 @@ mod tests {
       SimpleAuthService::new(token_service, user_repository);
     auth_service.register(&u);
     assert!(
-      auth_service.login(u.username, u.password_hash + 1).is_err()
+      auth_service.login(u.username, "totally wrong password").is_err()
     );
   }
 
@@ -99,7 +101,7 @@ mod tests {
     let auth_service =
       SimpleAuthService::new(token_service, user_repository);
     auth_service.register(&u);
-    match auth_service.login(u.username, u.password_hash) {
+    match auth_service.login(u.username, "password") {
       Ok(t) => assert!(auth_service.verify_token(&t)),
       Err(e) => panic!("login failed: {}", e),
     };
@@ -113,7 +115,7 @@ mod tests {
     let auth_service =
       SimpleAuthService::new(token_service, user_repository);
     auth_service.register(&u);
-    match auth_service.login(u.username, u.password_hash) {
+    match auth_service.login(u.username, "password") {
       Ok(_) => assert!(
         !auth_service
           .verify_token("RF7JM82Yvsh-2oJe20ivOU33SccYud0aUBmB6vmgPis")
@@ -130,7 +132,7 @@ mod tests {
     let auth_service =
       SimpleAuthService::new(token_service, user_repository);
     auth_service.register(&u);
-    let t = auth_service.login(u.username, u.password_hash).unwrap();
+    let t = auth_service.login(u.username, "password").unwrap();
     assert!(auth_service.logout(&t).is_ok());
   }
 }

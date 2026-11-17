@@ -21,7 +21,8 @@ pub enum UserRole {
 pub struct User {
   pub id: u128,
   pub username: String,
-  pub password_hash: u128,
+  /** bcrypt hash; produced by hashing the plain password server-side at registration. */
+  pub password_hash: String,
   pub email: String,
   pub role: UserRole,
   pub created_at: chrono::DateTime<Utc>,
@@ -33,7 +34,8 @@ impl User {
     User {
       id: 0,
       username: String::from("foo"),
-      password_hash: 0,
+      // bcrypt hash of "password" — the seeded demo credentials
+      password_hash: String::from("$2b$12$z.CRXSYDKf7vhp2qCjGlTOul/WugNkHzbT9D0owYrm2jhQONLLEWO"),
       role: UserRole::User,
       email: String::from("foo"),
       created_at: DateTime::from_timestamp(0, 0).unwrap(),
