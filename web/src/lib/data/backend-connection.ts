@@ -1,11 +1,60 @@
-import "server-only"
 import { CorDataSource } from "./types";
+import type { Connection, ConnectionStatus, Platform, SyncResult, User } from "./types";
+import type { Report, ReportContent, ReportInput } from "@/lib/reports/types";
 import { cookies } from "next/headers";
+import { DataSourceError, type DataSourceErrorCode } from "./errors";
 
-const TOKEN_COOKIE_NAME = "cor_token";
+/**
+ * HTTP-backed data source for the Rust backend.
+ *
+ * REAL backend endpoints (implemented in Rust today):
+ *   POST /auth/login  { username, password }             -> token string
+ *   POST /auth/logout { token }                          -> empty
+ *
+ * IMAGINED endpoints (this file defines the contract the backend will grow into; see the
+ * plan discussion — the sources/charts/me routes do not exist in Rust yet):
+ *   GET    /me                        -> BackendUser
+ *   GET    /sources                   -> BackendSource[]
+ *   POST   /sources                   { platform }            -> BackendSource
+ *   POST   /sources/:id/reconnect                             -> BackendSource
+ *   DELETE /sources/:id                                       -> 204
+ *   POST   /sources/:id/sync                                  -> { rows, finishedAt }
+ *   GET    /charts                    -> BackendChart[]
+ *   GET    /charts/:id                -> BackendChart
+ *   POST   /charts                    { title, type, data }   -> BackendChart
+ *   PUT    /charts/:id                { title, type, data }   -> BackendChart
+ *   DELETE /charts/:id                                        -> 204
+ *   POST   /charts/preview            { ReportInput }         -> ReportContent JSON
+ *
+ * IMAGINED conventions:
+ *   - Chart.data is a JSON-serialized ReportInput; the chart `type` is fixed to "bar"
+ *     until the composer gains a chart-type picker.
+ *   - Errors: { code, message } with 400/422 invalid_input, 401 needs_reconnect,
+ *     403/404 not_found, 409 one of the DataSourceErrorCodes.
+ */
+
+export const TOKEN_COOKIE_NAME = "cor_token";
+
+/** Backend address from env; null when the real backend isn't configured for this deployment. */
+export function backendConfig(): { address: string; port: number; tls: boolean } | null {
+  const address = process.env.COR_BACKEND_ADDRESS;
+  if (!address) return null;
+  return {
+    address,
+    port: Number(process.env.COR_BACKEND_PORT ?? 3001),
+    tls: process.env.COR_BACKEND_TLS === "true",
+  };
+}
+
+/** Auth client for the login/logout server actions, or null when no backend is configured. */
+export function backendClient(): ConcreteBackendConnection | null {
+  const config = backendConfig();
+  if (!config) return null;
+  return new ConcreteBackendConnection(`${config.tls ? "https" : "http"}://${config.address}:${config.port}`);
+}
 
 interface BackendConnection {
-  login(username: string, password_hash: string): void;
+  login(username: string, password: string): Promise<string | undefined>;
   logout(token: string): void;
 }
 
@@ -38,184 +87,204 @@ class HeadersBuilder {
 async function token(): Promise<string> {
   const token = (await cookies()).get(TOKEN_COOKIE_NAME)?.value;
   if (!token) {
-    throw new Error("Please log in again.");
+    throw new DataSourceError("needs_reconnect", "Please sign in again.");
   }
   return token;
 }
 
 async function call(
-  method: "GET" | "POST" | "HEAD",
+  method: "GET" | "POST" | "PUT" | "DELETE" | "HEAD",
   base: string,
   path: string,
   headers?: HeadersInit,
   body?: string,
-  overrideHeaders?: HeadersInit
 ): Promise<Response> {
   const req = new Request(`${base}${path}`, {
     method,
     headers: {
       ...headers,
       ...HeadersBuilder.default().build(),
-      ...overrideHeaders,
     },
     cache: "no-store",
     body,
+    signal: AbortSignal.timeout(10_000),
   });
 
-  const timeout_ms = 10000;
-
-  return await Promise.race([
-    fetch(req),
-    new Promise<never>((_, reject) => {
-      setTimeout(() => {
-        reject("connection timed out");
-      }, timeout_ms);
-    })
-  ]);
+  return await fetch(req);
 }
 
-class ConcreteBackendConnection implements BackendConnection {
+const STATUS_CODES: Record<number, DataSourceErrorCode> = {
+  400: "invalid_input",
+  401: "needs_reconnect",
+  403: "not_found",
+  404: "not_found",
+  409: "sync_in_progress",
+  422: "invalid_input",
+};
+
+const isErrorCode = (value: unknown): value is DataSourceErrorCode =>
+  typeof value === "string" && value in STATUS_CODES;
+
+/** Turns a non-2xx response into the one expected-error type the UI understands. */
+async function failure(res: Response): Promise<never> {
+  if (res.status >= 500) throw new Error(`Backend request failed (${res.status}).`);
+  let code = STATUS_CODES[res.status] ?? "invalid_input";
+  let message = `Request failed (${res.status}).`;
+  try {
+    const body = await res.json() as { code?: string; message?: string };
+    if (typeof body.message === "string") message = body.message;
+    if (isErrorCode(body.code)) code = body.code;
+  } catch { /* non-JSON error body: keep the fallbacks */ }
+  throw new DataSourceError(code, message);
+}
+
+/** Authenticated JSON call; every method below funnels through here. */
+async function api<T>(method: "GET" | "POST" | "PUT" | "DELETE", base: string, path: string, body?: unknown): Promise<T> {
+  const headers = HeadersBuilder.default().with_token(await token()).build();
+  const res = await call(method, base, path, headers, body === undefined ? undefined : JSON.stringify(body));
+  if (!res.ok) await failure(res);
+  if (res.status === 204) return undefined as T;
+  return await res.json() as T;
+}
+
+/** Auth client for the login/logout server actions (wired up outside this file). */
+/** Auth client for the login/logout server actions (wired up outside this file). */
+export class ConcreteBackendConnection implements BackendConnection {
   private base: string;
 
   constructor(base: string) {
     this.base = base;
   }
 
-  async login(username: string, password_hash: string): Promise<string | undefined> {
+  /** Sends the plain password; the backend hashes (bcrypt) and verifies server-side. */
+  async login(username: string, password: string): Promise<string | undefined> {
     const headers = HeadersBuilder.default().build();
-    const param = { username: username, password_hash: password_hash };
-    const body = JSON.stringify(param);
+    const body = JSON.stringify({ username, password });
     const res = await call("POST", this.base, "/auth/login", headers, body);
     if (!res.ok) {
       return undefined;
     }
-    return await res.body?.getReader().read() as unknown as string;
+    return await res.text();
   }
 
   async logout(token: string): Promise<void> {
-    throw new Error("Method not implemented.");
+    const headers = HeadersBuilder.default().build();
+    const res = await call("POST", this.base, "/auth/logout", headers, JSON.stringify({ token }));
+    if (!res.ok) throw new DataSourceError("needs_reconnect", "Could not sign out; try again.");
   }
 }
 
-export function backendDataSource(address: string, port: number, tls: boolean = false): Partial<CorDataSource> {
-  const base = `http{tls ? 's' : ''}://{address}:{port}`;
-  const conn = new ConcreteBackendConnection();
+// ----- Imagined backend response shapes and their mappings onto the frontend contract -----
+
+/** Imagined GET /me. */
+interface BackendUser {
+  id: number | string;
+  username: string;
+  email: string;
+  role: "admin" | "user";
+}
+
+/** Imagined source row (GET/POST /sources). Mirrors the class diagram's ExternalDataSource. */
+interface BackendSource {
+  id: number | string;
+  platform: Platform;
+  name: string;
+  status?: ConnectionStatus;
+  lastSyncedAt: string | null;
+  syncIntervalSeconds?: number | null;
+  account?: string;
+  channelCode?: string;
+}
+
+/** Imagined chart row (GET/POST /charts). Mirrors the class diagram's Chart. */
+interface BackendChart {
+  id: number | string;
+  title: string;
+  type: "bar" | "line" | "pie" | "scatter";
+  /** JSON-serialized ReportInput (imagined convention). */
+  data: string;
+  userId: number | string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+const PLATFORMS: Platform[] = ["google-ads", "meta-ads", "linkedin-ads", "tiktok-ads", "microsoft-ads"];
+
+function toUser(u: BackendUser): User {
+  const name = u.username;
   return {
-    getWorkspace: undefined,
-    getCurrentUser: undefined,
-    listConnections: undefined,
-    connectPlatform: undefined,
-    reconnect: undefined,
-    disconnect: undefined,
-    syncNow: undefined,
-    getCrm: undefined,
-    connectCrm: undefined,
-    reconnectCrm: undefined,
-    disconnectCrm: undefined,
-    syncCrm: undefined,
-    updateCrmSettings: undefined,
-    listCampaigns: undefined,
-    getAnalytics: undefined,
-    listViews: undefined,
-    createView: undefined,
-    saveView: undefined,
-    deleteView: undefined,
-    listDatasets: undefined,
-    setDatasetEnabled: undefined,
-    listRecords: undefined,
-    listMembers: undefined,
-    listInvites: undefined,
-    inviteMembers: undefined,
-    resendInvite: undefined,
-    revokeInvite: undefined,
-    changeRole: undefined,
-    removeMember: undefined,
-    getPreferences: undefined,
-    updateProfile: undefined,
-    updateWorkspace: undefined,
-    getNotifications: undefined,
-    updateNotifications: undefined,
-    listAlerts: undefined,
-    createAlert: undefined,
-    updateAlert: undefined,
-    setAlertPaused: undefined,
-    deleteAlert: undefined,
-    getAlertSeries: undefined,
-    listReports: undefined,
-    getReport: undefined,
-    saveReport: undefined,
-    deleteReport: undefined,
-    getReportContext: undefined,
-    getReportContent: undefined,
-  }
+    id: String(u.id),
+    name,
+    email: u.email,
+    role: u.role === "admin" ? "admin" : "member",
+    initials: name.split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "").join(""),
+  };
 }
 
+function toConnection(s: BackendSource): Connection {
+  return {
+    id: String(s.id),
+    channelCode: s.channelCode ?? `CH·${String(PLATFORMS.indexOf(s.platform) + 1).padStart(2, "0")}`,
+    platform: s.platform,
+    name: s.name,
+    account: s.account ?? s.name,
+    status: s.status ?? "available",
+    lastSyncedAt: s.lastSyncedAt,
+    datasets: { enabled: 1, total: 1 },
+    nextSyncAt: s.lastSyncedAt && s.syncIntervalSeconds
+      ? new Date(new Date(s.lastSyncedAt).getTime() + s.syncIntervalSeconds * 1000).toISOString()
+      : null,
+  };
+}
 
-// export interface CorDataSource {
-//   getWorkspace(): Promise<Workspace>;
-//   getCurrentUser(): Promise<User>;
-//   /** Connected platforms first (by channel code), then platforms available to connect. */
-//   listConnections(): Promise<Connection[]>;
-//   /** Called after the platform's own sign-in approves access. */
-//   connectPlatform(platform: Platform): Promise<Connection>;
-//   reconnect(connectionId: string): Promise<Connection>;
-//   /** Removes the connection and deletes the data COR stored from it. */
-//   disconnect(connectionId: string): Promise<void>;
-//   syncNow(connectionId: string): Promise<SyncResult>;
-//   getCrm(): Promise<CrmConnection>;
-//   /** Called after the CRM's own sign-in approves access. */
-//   connectCrm(): Promise<CrmConnection>;
-//   reconnectCrm(): Promise<CrmConnection>;
-//   /** Removes the CRM and deletes the contacts and deals COR stored from it. */
-//   disconnectCrm(): Promise<void>;
-//   syncCrm(): Promise<SyncResult>;
-//   updateCrmSettings(settings: CrmSettings): Promise<CrmConnection>;
-//   /** Campaigns across connected platforms, for filters and validation. */
-//   listCampaigns(): Promise<CampaignInfo[]>;
-//   /** Everything the Analytics page shows for one filter. */
-//   getAnalytics(filter: AnalyticsFilter): Promise<AnalyticsReport>;
-//   /** The current user's saved Analytics views, Default first. */
-//   listViews(): Promise<SavedView[]>;
-//   createView(name: string, bays: BayConfig[]): Promise<SavedView>;
-//   /** Null puts the view back on the system default layout. */
-//   saveView(id: string, bays: BayConfig[] | null): Promise<SavedView>;
-//   deleteView(id: string): Promise<void>;
-//   /** Datasets for an ad connection id or the CRM source id, with stored record counts. */
-//   listDatasets(sourceId: string): Promise<DatasetSummary[]>;
-//   setDatasetEnabled(sourceId: string, datasetId: string, enabled: boolean): Promise<void>;
-//   listRecords(sourceId: string, datasetId: string, query: RecordQuery): Promise<RecordPage>;
-//   listMembers(): Promise<Member[]>;
-//   listInvites(): Promise<Invite[]>;
-//   /** Sends invitations; refuses the whole batch if any address can't be invited. */
-//   inviteMembers(emails: string[], role: Role): Promise<Invite[]>;
-//   resendInvite(inviteId: string): Promise<Invite>;
-//   revokeInvite(inviteId: string): Promise<void>;
-//   changeRole(memberId: string, role: Role): Promise<Member>;
-//   /** Removes a member; they lose access immediately. */
-//   removeMember(memberId: string): Promise<void>;
-//   /** The current user's personal preferences. */
-//   getPreferences(): Promise<Preferences>;
-//   updateProfile(input: ProfileInput): Promise<User>;
-//   /** Admins only: name, currency, time zone and week start for everyone. */
-//   updateWorkspace(input: WorkspaceInput): Promise<Workspace>;
-//   getNotifications(): Promise<NotificationPrefs>;
-//   updateNotifications(prefs: NotificationPrefs): Promise<NotificationPrefs>;
-//   /** Workspace alerts plus the current user's personal alerts, newest first. */
-//   listAlerts(): Promise<AlertRule[]>;
-//   createAlert(draft: AlertDraft): Promise<AlertRule>;
-//   updateAlert(alertId: string, draft: AlertDraft): Promise<AlertRule>;
-//   setAlertPaused(alertId: string, paused: boolean): Promise<void>;
-//   deleteAlert(alertId: string): Promise<void>;
-//   /** Recent daily totals per channel, for checking alert rules. */
-//   getAlertSeries(): Promise<AlertSeries>;
-//   /** Every report in the workspace, most recently changed first. */
-//   listReports(): Promise<Report[]>;
-//   getReport(reportId: string): Promise<Report | null>;
-//   /** Creates (null id) or updates a report; owners and admins only for updates. */
-//   saveReport(reportId: string | null, input: ReportInput): Promise<Report>;
-//   deleteReport(reportId: string): Promise<void>;
-//   /** Channels a report can include, today, and the attribution source. */
-//   getReportContext(): Promise<ReportContext & { source: AttributionSource }>;
-//   /** The report's numbers for its window and channels, as the preview and exports show them. */
-//   getReportContent(input: ReportInput): Promise<ReportContent>;
-// }
+function toReport(c: BackendChart): Report {
+  const stored = JSON.parse(c.data) as ReportInput & { ownerName?: string };
+  return {
+    ...stored,
+    id: String(c.id),
+    ownerId: String(c.userId),
+    ownerName: stored.ownerName ?? "",
+    createdAt: c.createdAt,
+    updatedAt: c.updatedAt,
+  };
+}
+
+// The backend only implements auth so far; every method added here must shadow the mock
+// counterpart at the call site: `{ ...mockDataSource, ...backendDataSource(addr, port) }`.
+// Methods left unimplemented are simply omitted, so the mock keeps serving them.
+export function backendDataSource(address: string, port: number, tls: boolean = false): Partial<CorDataSource> {
+  const base = `http${tls ? "s" : ""}://${address}:${port}`;
+
+  const chartBody = (input: ReportInput) => ({
+    title: input.name,
+    type: "bar" as const, // imagined: fixed until the composer offers chart types
+    data: JSON.stringify(input),
+  });
+
+  return {
+    // ----- Session -----
+    getCurrentUser: async () => toUser(await api<BackendUser>("GET", base, "/me")),
+
+    // ----- Connections (external data sources) -----
+    listConnections: async () => (await api<BackendSource[]>("GET", base, "/sources")).map(toConnection),
+    connectPlatform: async (platform) => toConnection(await api<BackendSource>("POST", base, "/sources", { platform })),
+    reconnect: async (connectionId) => toConnection(await api<BackendSource>("POST", base, `/sources/${connectionId}/reconnect`)),
+    disconnect: async (connectionId) => { await api<void>("DELETE", base, `/sources/${connectionId}`); },
+    syncNow: async (connectionId) => await api<SyncResult>("POST", base, `/sources/${connectionId}/sync`),
+
+    // ----- Reports (charts) -----
+    listReports: async () => (await api<BackendChart[]>("GET", base, "/charts")).map(toReport),
+    getReport: async (reportId) => {
+      try {
+        return toReport(await api<BackendChart>("GET", base, `/charts/${reportId}`));
+      } catch (error) {
+        if (error instanceof DataSourceError && error.code === "not_found") return null;
+        throw error;
+      }
+    },
+    saveReport: async (reportId, input) =>
+      toReport(await api<BackendChart>(reportId ? "PUT" : "POST", base, reportId ? `/charts/${reportId}` : "/charts", chartBody(input))),
+    deleteReport: async (reportId) => { await api<void>("DELETE", base, `/charts/${reportId}`); },
+    getReportContent: async (input) => await api<ReportContent>("POST", base, "/charts/preview", input),
+  };
+}
