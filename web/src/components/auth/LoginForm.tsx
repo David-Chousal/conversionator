@@ -25,7 +25,7 @@ export function LoginForm({ workspaceName }: LoginFormProps) {
       </div>
       <label className="cor-fieldset">
         <span className="cor-fieldset__label"><span className="cor-tag">Work email</span></span>
-        <input className="cor-input" id="login-email" name="email" type="email" autoComplete="username" required />
+        <input className="cor-input" id="login-email" name="email" autoComplete="username" required />
       </label>
       <label className="cor-fieldset">
         <span className="cor-fieldset__label">
