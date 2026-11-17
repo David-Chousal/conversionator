@@ -123,6 +123,15 @@ impl TokenService for SimpleTokenService {
       .get(token_str)
       .map(|t| t.role)
   }
+
+  fn get_token(&self, token_str: &str) -> Option<Token> {
+    self
+      .active_tokens
+      .read()
+      .unwrap_or_else(|e| e.into_inner())
+      .get(token_str)
+      .cloned()
+  }
 }
 
 #[cfg(test)]

@@ -127,6 +127,17 @@ impl UserRepository for SimpleDatabase {
 }
 
 impl TeamRepository for SimpleDatabase {
+  fn get_all(&self) -> Vec<Team> {
+    self
+      .data
+      .read()
+      .unwrap()
+      .team_store
+      .values()
+      .cloned()
+      .collect()
+  }
+
   fn save(&self, team: &Team) -> Option<Team> {
     self
       .data
