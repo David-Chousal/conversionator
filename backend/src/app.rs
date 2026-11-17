@@ -39,9 +39,12 @@ impl App {
     let team_service = Arc::new(SimpleTeamService::new(db.clone(), user_repository.clone()));
     let source_repository: Arc<dyn SourceConfigRepository + Send + Sync> = db.clone();
     let cache_repository: Arc<dyn ExternalDataCacheRepository + Send + Sync> = db.clone();
-    // Seed the demo admin so login works against a fresh database (username "foo", password "password").
+    // Seed the demo admin so login works against a fresh database. The login form's
+    // "Work email" field is type="email", so the username must look like an email.
     let mut demo_user = User::get_dummy();
     demo_user.role = UserRole::Admin;
+    demo_user.username = String::from("foo@cor.dev");
+    demo_user.email = String::from("foo@cor.dev");
     auth_service.register(&demo_user);
 
     // Periodic external-source sync: every 30s, sync each source whose interval has elapsed
