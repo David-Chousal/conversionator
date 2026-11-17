@@ -1,36 +1,28 @@
 import { CorDataSource } from "./types";
 import type { Connection, ConnectionStatus, Platform, SyncResult, User } from "./types";
-import type { Report, ReportContent, ReportInput } from "@/lib/reports/types";
 import { cookies } from "next/headers";
 import { DataSourceError, type DataSourceErrorCode } from "./errors";
+import { campaignsFromSources, reportFromSources, type BackendMetricsSource } from "./backend-analytics";
+import { mockDataSource } from "./mock";
 
 /**
  * HTTP-backed data source for the Rust backend.
  *
- * REAL backend endpoints (implemented in Rust today):
- *   POST /auth/login  { username, password }             -> token string
- *   POST /auth/logout { token }                          -> empty
+ * REAL backend endpoints (implemented and smoke-tested in Rust):
+ *   POST   /auth/login  { username, password }  -> token string
+ *   POST   /auth/logout { token }               -> empty
+ *   GET    /me                                  -> BackendUser            (imagined — not in Rust yet)
+ *   GET    /sources                             -> BackendSource[]
+ *   POST   /sources                             { platform }              -> BackendSource
+ *   POST   /sources/:id/sync                                              -> { rows, finishedAt }
+ *   POST   /sources/:id/reconnect                                         -> BackendSource
+ *   DELETE /sources/:id                                                   -> empty
+ *   GET    /metrics                             -> { sources: [{ id, platform, name, data: [rows] }] }
  *
- * IMAGINED endpoints (this file defines the contract the backend will grow into; see the
- * plan discussion — the sources/charts/me routes do not exist in Rust yet):
- *   GET    /me                        -> BackendUser
- *   GET    /sources                   -> BackendSource[]
- *   POST   /sources                   { platform }            -> BackendSource
- *   POST   /sources/:id/reconnect                             -> BackendSource
- *   DELETE /sources/:id                                       -> 204
- *   POST   /sources/:id/sync                                  -> { rows, finishedAt }
- *   GET    /charts                    -> BackendChart[]
- *   GET    /charts/:id                -> BackendChart
- *   POST   /charts                    { title, type, data }   -> BackendChart
- *   PUT    /charts/:id                { title, type, data }   -> BackendChart
- *   DELETE /charts/:id                                        -> 204
- *   POST   /charts/preview            { ReportInput }         -> ReportContent JSON
+ * Charts were dropped from the scope, so report methods stay on the mock.
  *
- * IMAGINED conventions:
- *   - Chart.data is a JSON-serialized ReportInput; the chart `type` is fixed to "bar"
- *     until the composer gains a chart-type picker.
- *   - Errors: { code, message } with 400/422 invalid_input, 401 needs_reconnect,
- *     403/404 not_found, 409 one of the DataSourceErrorCodes.
+ * Error convention: { code, message } with 400/422 invalid_input, 401 needs_reconnect,
+ * 403/404 not_found, 409 one of the DataSourceErrorCodes.
  */
 
 export const TOKEN_COOKIE_NAME = "cor_token";
@@ -148,7 +140,6 @@ async function api<T>(method: "GET" | "POST" | "PUT" | "DELETE", base: string, p
 }
 
 /** Auth client for the login/logout server actions (wired up outside this file). */
-/** Auth client for the login/logout server actions (wired up outside this file). */
 export class ConcreteBackendConnection implements BackendConnection {
   private base: string;
 
@@ -174,7 +165,7 @@ export class ConcreteBackendConnection implements BackendConnection {
   }
 }
 
-// ----- Imagined backend response shapes and their mappings onto the frontend contract -----
+// ----- Backend response shapes and their mappings onto the frontend contract -----
 
 /** Imagined GET /me. */
 interface BackendUser {
@@ -184,7 +175,7 @@ interface BackendUser {
   role: "admin" | "user";
 }
 
-/** Imagined source row (GET/POST /sources). Mirrors the class diagram's ExternalDataSource. */
+/** Source row (GET/POST /sources). Mirrors the class diagram's ExternalDataSource. */
 interface BackendSource {
   id: number | string;
   platform: Platform;
@@ -196,16 +187,9 @@ interface BackendSource {
   channelCode?: string;
 }
 
-/** Imagined chart row (GET/POST /charts). Mirrors the class diagram's Chart. */
-interface BackendChart {
-  id: number | string;
-  title: string;
-  type: "bar" | "line" | "pie" | "scatter";
-  /** JSON-serialized ReportInput (imagined convention). */
-  data: string;
-  userId: number | string;
-  createdAt: string;
-  updatedAt: string;
+/** Imagined metrics response (GET /metrics): the cached rows of every external source. */
+interface BackendMetrics {
+  sources: BackendMetricsSource[];
 }
 
 const PLATFORMS: Platform[] = ["google-ads", "meta-ads", "linkedin-ads", "tiktok-ads", "microsoft-ads"];
@@ -237,54 +221,37 @@ function toConnection(s: BackendSource): Connection {
   };
 }
 
-function toReport(c: BackendChart): Report {
-  const stored = JSON.parse(c.data) as ReportInput & { ownerName?: string };
-  return {
-    ...stored,
-    id: String(c.id),
-    ownerId: String(c.userId),
-    ownerName: stored.ownerName ?? "",
-    createdAt: c.createdAt,
-    updatedAt: c.updatedAt,
-  };
-}
-
-// The backend only implements auth so far; every method added here must shadow the mock
-// counterpart at the call site: `{ ...mockDataSource, ...backendDataSource(addr, port) }`.
-// Methods left unimplemented are simply omitted, so the mock keeps serving them.
+// The backend implements auth, teams, external sources and metrics; every method here
+// shadows the mock counterpart at the call site: `{ ...mockDataSource, ...backendDataSource(...) }`.
+// Methods left unimplemented are simply omitted, so the mock keeps serving them (reports,
+// workspace, CRM, …).
 export function backendDataSource(address: string, port: number, tls: boolean = false): Partial<CorDataSource> {
   const base = `http${tls ? "s" : ""}://${address}:${port}`;
 
-  const chartBody = (input: ReportInput) => ({
-    title: input.name,
-    type: "bar" as const, // imagined: fixed until the composer offers chart types
-    data: JSON.stringify(input),
-  });
+  const listConnections = async (): Promise<Connection[]> =>
+    (await api<BackendSource[]>("GET", base, "/sources")).map(toConnection);
 
   return {
     // ----- Session -----
     getCurrentUser: async () => toUser(await api<BackendUser>("GET", base, "/me")),
 
     // ----- Connections (external data sources) -----
-    listConnections: async () => (await api<BackendSource[]>("GET", base, "/sources")).map(toConnection),
+    listConnections,
     connectPlatform: async (platform) => toConnection(await api<BackendSource>("POST", base, "/sources", { platform })),
     reconnect: async (connectionId) => toConnection(await api<BackendSource>("POST", base, `/sources/${connectionId}/reconnect`)),
     disconnect: async (connectionId) => { await api<void>("DELETE", base, `/sources/${connectionId}`); },
     syncNow: async (connectionId) => await api<SyncResult>("POST", base, `/sources/${connectionId}/sync`),
 
-    // ----- Reports (charts) -----
-    listReports: async () => (await api<BackendChart[]>("GET", base, "/charts")).map(toReport),
-    getReport: async (reportId) => {
-      try {
-        return toReport(await api<BackendChart>("GET", base, `/charts/${reportId}`));
-      } catch (error) {
-        if (error instanceof DataSourceError && error.code === "not_found") return null;
-        throw error;
-      }
+    // ----- Campaigns & analytics (from the cached external ad data) -----
+    listCampaigns: async () => campaignsFromSources((await api<BackendMetrics>("GET", base, "/metrics")).sources),
+
+    getAnalytics: async (filter) => {
+      const [metrics, workspace, connections] = await Promise.all([
+        api<BackendMetrics>("GET", base, "/metrics"),
+        mockDataSource.getWorkspace(), // workspace config (name, currency, time zone) stays mock
+        listConnections(),
+      ]);
+      return reportFromSources(metrics.sources, connections, workspace, filter, Date.now());
     },
-    saveReport: async (reportId, input) =>
-      toReport(await api<BackendChart>(reportId ? "PUT" : "POST", base, reportId ? `/charts/${reportId}` : "/charts", chartBody(input))),
-    deleteReport: async (reportId) => { await api<void>("DELETE", base, `/charts/${reportId}`); },
-    getReportContent: async (input) => await api<ReportContent>("POST", base, "/charts/preview", input),
   };
 }
