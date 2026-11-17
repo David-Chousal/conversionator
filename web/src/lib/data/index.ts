@@ -1,8 +1,15 @@
 import { mockDataSource } from "./mock";
+import { backendConfig, backendDataSource } from "./backend-connection";
 import type { CorDataSource } from "./types";
 
-// Swap for the real API client once the unified data layer exists; pages import only from here.
-export const dataSource: CorDataSource = mockDataSource;
+// The real backend is opt-in via COR_BACKEND_ADDRESS (COR_BACKEND_PORT, COR_BACKEND_TLS optional).
+// backendDataSource only implements what the Rust server covers; unimplemented methods fall
+// through to the mock. Pages import only from here.
+const backend = backendConfig();
+
+export const dataSource: CorDataSource = backend
+  ? { ...mockDataSource, ...backendDataSource(backend.address, backend.port, backend.tls) }
+  : mockDataSource;
 
 export * from "./types";
 export * from "./sync";

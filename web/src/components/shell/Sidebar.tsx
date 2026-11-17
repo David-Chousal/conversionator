@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense } from "react";
+import { logoutAction } from "@/app/(auth)/login/actions";
 import { Icon } from "@/components/ui/Icon";
 import { Key } from "@/components/ui/Key";
 import type { User } from "@/lib/data";
@@ -37,7 +38,7 @@ function SidebarNav({ workspaceName, user, pathname }: SidebarProps & { pathname
             <strong>{user.name}</strong>
             <span>{user.role === "admin" ? "Admin" : "Member"}</span>
           </span>
-          <Key size="sm" iconOnly icon="logout" aria-label="Sign out" style={{ marginLeft: "auto" }} onClick={() => router.push("/login")} />
+          <Key size="sm" iconOnly icon="logout" aria-label="Sign out" style={{ marginLeft: "auto" }} onClick={() => { void logoutAction(); }} />
         </div>
       </nav>
       <nav className="cor-bottomnav" aria-label="Main, compact">
