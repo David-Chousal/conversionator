@@ -11,7 +11,7 @@ import { mockDataSource } from "./mock";
  * REAL backend endpoints (implemented and smoke-tested in Rust):
  *   POST   /auth/login  { username, password }  -> token string
  *   POST   /auth/logout { token }               -> empty
- *   GET    /me                                  -> BackendUser            (imagined — not in Rust yet)
+ *   GET    /me                                  -> { id, username, email, role }
  *   GET    /sources                             -> BackendSource[]
  *   POST   /sources                             { platform }              -> BackendSource
  *   POST   /sources/:id/sync                                              -> { rows, finishedAt }
@@ -167,7 +167,7 @@ export class ConcreteBackendConnection implements BackendConnection {
 
 // ----- Backend response shapes and their mappings onto the frontend contract -----
 
-/** Imagined GET /me. */
+/** The signed-in user (GET /me). */
 interface BackendUser {
   id: number | string;
   username: string;

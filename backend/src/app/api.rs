@@ -118,6 +118,7 @@ impl CorApi {
       .nest("/teams", team_router)
       .nest("/sources", sources_router)
       .nest("/metrics", metrics_router)
+      .nest("/me", auth::make_me_router())
       .nest("/foo", foo_router)
   }
 

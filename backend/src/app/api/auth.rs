@@ -1,9 +1,9 @@
 use axum::{
-  Json, Router, body::Body, extract::State, http::Response,
-  response::IntoResponse, routing::post,
+  Json, Router, body::Body, extract::State, http::{HeaderMap, Response},
+  response::IntoResponse, routing::{get, post},
 };
 
-use crate::app::api::ApiState;
+use crate::app::api::{ApiError, ApiState, require_user};
 
 #[derive(serde::Deserialize)]
 pub struct LoginParams {
@@ -50,6 +50,43 @@ pub fn make_router() -> Router<ApiState> {
   Router::new()
     .route("/login", post(handle_login))
     .route("/logout", post(handle_logout))
+}
+
+/// The signed-in user, mounted at the root as GET /me.
+pub fn make_me_router() -> Router<ApiState> {
+  Router::new().route("/", get(handle_me))
+}
+
+/// Response shape: string id (JS numbers round u128s), no password hash,
+/// role as "admin" | "user" to match the frontend contract.
+#[derive(serde::Serialize)]
+struct UserResponse {
+  id: String,
+  username: String,
+  email: String,
+  role: String,
+}
+
+impl From<crate::types::User> for UserResponse {
+  fn from(u: crate::types::User) -> Self {
+    Self {
+      id: u.id.to_string(),
+      username: u.username,
+      email: u.email,
+      role: match u.role {
+        crate::types::UserRole::Admin => "admin".into(),
+        crate::types::UserRole::User => "user".into(),
+      },
+    }
+  }
+}
+
+async fn handle_me(
+  State(state): State<ApiState>,
+  headers: HeaderMap,
+) -> Result<Json<UserResponse>, ApiError> {
+  let user = require_user(&state, &headers)?;
+  Ok(Json(UserResponse::from(user)))
 }
 
 async fn handle_login(
