@@ -6,9 +6,16 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
-  // Against the real backend, everything behind the shell needs a session; mock mode has none.
-  if (backendClient() && !(await cookies()).get(TOKEN_COOKIE_NAME)) {
-    redirect("/login");
+  // Against the real backend, everything behind the shell needs a valid session;
+  // mock mode has none. Tokens are in-memory and die with each backend restart,
+  // so a cookie can be present but stale — check it with /me before rendering.
+  if (backendClient()) {
+    if (!(await cookies()).get(TOKEN_COOKIE_NAME)) redirect("/login");
+    try {
+      await dataSource.getCurrentUser();
+    } catch {
+      redirect("/login"); // stale or revoked token: a fresh sign-in replaces the cookie
+    }
   }
   const [workspace, user] = await Promise.all([dataSource.getWorkspace(), dataSource.getCurrentUser()]);
   return (
