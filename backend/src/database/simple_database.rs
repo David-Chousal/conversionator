@@ -5,8 +5,12 @@ use std::{
 };
 
 use crate::{
-  database::{UserRepository, team_repository::TeamRepository},
-  types::{Team, User},
+  database::{
+    UserRepository,
+    external_data_repository::{ExternalDataCacheRepository, SourceConfigRepository},
+    team_repository::TeamRepository,
+  },
+  types::{ExternalDataCache, SourceConfig, Team, User},
 };
 
 pub struct SimpleDatabase {
@@ -17,6 +21,8 @@ pub struct SimpleDatabase {
 struct SimpleDatabaseData {
   user_store: HashMap<u128, User>,
   team_store: HashMap<u128, Team>,
+  source_store: HashMap<u128, SourceConfig>,
+  external_cache_store: HashMap<u128, ExternalDataCache>,
 }
 
 impl SimpleDatabaseData {
@@ -24,6 +30,8 @@ impl SimpleDatabaseData {
     SimpleDatabaseData {
       user_store: HashMap::new(),
       team_store: HashMap::new(),
+      source_store: HashMap::new(),
+      external_cache_store: HashMap::new(),
     }
   }
 }
@@ -162,6 +170,54 @@ impl TeamRepository for SimpleDatabase {
       Some(t) => Ok(t),
       None => Err("team not found"),
     }
+  }
+}
+
+impl ExternalDataCacheRepository for SimpleDatabase {
+  fn save_cache(&self, cache: &ExternalDataCache) -> Option<ExternalDataCache> {
+    self
+      .data
+      .write()
+      .unwrap()
+      .external_cache_store
+      .insert(cache.source_id, cache.clone())
+  }
+
+  fn get_cache(&self, source_id: u128) -> Option<ExternalDataCache> {
+    self
+      .data
+      .read()
+      .unwrap()
+      .external_cache_store
+      .get(&source_id)
+      .cloned()
+  }
+
+  fn delete_cache(&self, source_id: u128) {
+    self.data.write().unwrap().external_cache_store.remove(&source_id);
+  }
+}
+
+impl SourceConfigRepository for SimpleDatabase {
+  fn get_all(&self) -> Vec<SourceConfig> {
+    self.data.read().unwrap().source_store.values().cloned().collect()
+  }
+
+  fn save(&self, source: &SourceConfig) -> Option<SourceConfig> {
+    self
+      .data
+      .write()
+      .unwrap()
+      .source_store
+      .insert(source.id, source.clone())
+  }
+
+  fn get_by_id(&self, id: u128) -> Option<SourceConfig> {
+    self.data.read().unwrap().source_store.get(&id).cloned()
+  }
+
+  fn delete_by_id(&self, id: u128) -> Option<SourceConfig> {
+    self.data.write().unwrap().source_store.remove(&id)
   }
 }
 

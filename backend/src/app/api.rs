@@ -7,7 +7,7 @@ use tower::Service as _;
 
 use crate::{
   auth_service::AuthService,
-  database::UserRepository,
+  database::{ExternalDataCacheRepository, SourceConfigRepository, UserRepository},
   role_check::require_role,
   team_service::TeamService,
   token_service::TokenService,
@@ -15,6 +15,7 @@ use crate::{
 };
 
 pub mod auth;
+pub mod sources;
 pub mod team;
 
 #[derive(Clone)]
@@ -23,6 +24,8 @@ pub struct ApiState {
   pub token_service: Arc<dyn TokenService + Send + Sync>,
   pub user_repository: Arc<dyn UserRepository + Send + Sync>,
   pub team_service: Arc<dyn TeamService + Send + Sync>,
+  pub source_repository: Arc<dyn SourceConfigRepository + Send + Sync>,
+  pub cache_repository: Arc<dyn ExternalDataCacheRepository + Send + Sync>,
 }
 
 pub struct CorApi {
@@ -84,6 +87,8 @@ impl CorApi {
     token_service: Arc<dyn TokenService + Send + Sync>,
     user_repository: Arc<dyn UserRepository + Send + Sync>,
     team_service: Arc<dyn TeamService + Send + Sync>,
+    source_repository: Arc<dyn SourceConfigRepository + Send + Sync>,
+    cache_repository: Arc<dyn ExternalDataCacheRepository + Send + Sync>,
   ) -> Self {
     Self {
       state: ApiState {
@@ -91,6 +96,8 @@ impl CorApi {
         token_service,
         user_repository,
         team_service,
+        source_repository,
+        cache_repository,
       },
       router: Self::setup_routes(),
     }
@@ -100,6 +107,8 @@ impl CorApi {
   fn setup_routes() -> Router<ApiState> {
     let auth_router = auth::make_router();
     let team_router = team::make_router();
+    let sources_router = sources::make_sources_router();
+    let metrics_router = sources::make_metrics_router();
 
     let foo_router =
       Router::new().route("/", get(async || "Hello world!"));
@@ -107,6 +116,8 @@ impl CorApi {
     Router::new()
       .nest("/auth", auth_router)
       .nest("/teams", team_router)
+      .nest("/sources", sources_router)
+      .nest("/metrics", metrics_router)
       .nest("/foo", foo_router)
   }
 

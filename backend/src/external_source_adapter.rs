@@ -1,15 +1,14 @@
-mod simple_csv_api_adapter;
-mod sqlite_database_adapter;
+use chrono::{DateTime, Utc};
+use serde::Serialize;
 
-pub use simple_csv_api_adapter::SimpleCsvApiAdapter;
-pub use sqlite_database_adapter::SQLiteDatabaseAdapter;
-
-pub struct ExternalSourceStatus {}
-
-pub trait ExternalSourceAdapter {
-  async fn sync(&self) -> Result<(), &'static str>;
-  fn status(&self) -> ExternalSourceStatus;
-  fn data_bytes(&self) -> Vec<u8>;
+/// Sync health for one source, as the /sources API reports it.
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExternalSourceStatus {
+  pub last_synced_at: Option<DateTime<Utc>>,
+  pub cached_at: Option<DateTime<Utc>>,
+  pub cache_expired: bool,
 }
 
-pub trait LocalCache {}
+mod simple_api_adapter;
+pub use simple_api_adapter::SimpleApiAdapter;

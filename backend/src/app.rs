@@ -9,7 +9,10 @@ use chrono::TimeDelta;
 use crate::{
   app::api::CorApi,
   auth_service::SimpleAuthService,
-  database::{SimpleDatabase, UserRepository},
+  database::{
+    ExternalDataCacheRepository, SimpleDatabase, SourceConfigRepository, UserRepository,
+  },
+  external_source_adapter::SimpleApiAdapter,
   team_service::SimpleTeamService,
   token_service::SimpleTokenService,
   types::{User, UserRole},
@@ -34,11 +37,48 @@ impl App {
       db.clone() as Arc<dyn UserRepository>,
     ));
     let team_service = Arc::new(SimpleTeamService::new(db.clone(), user_repository.clone()));
+    let source_repository: Arc<dyn SourceConfigRepository + Send + Sync> = db.clone();
+    let cache_repository: Arc<dyn ExternalDataCacheRepository + Send + Sync> = db.clone();
     // Seed the demo admin so login works against a fresh database (username "foo", password "password").
     let mut demo_user = User::get_dummy();
     demo_user.role = UserRole::Admin;
     auth_service.register(&demo_user);
-    let api = CorApi::new(auth_service, token_service, user_repository, team_service);
+
+    // Periodic external-source sync: every 30s, sync each source whose interval has elapsed
+    // (the diagram's isSyncDue / updateSyncTimestamp story).
+    let scheduler_sources = source_repository.clone();
+    let scheduler_cache = cache_repository.clone();
+    tokio::spawn(async move {
+      let source_repository = scheduler_sources;
+      let cache_repository = scheduler_cache;
+      loop {
+        tokio::time::sleep(std::time::Duration::from_secs(30)).await;
+        for config in source_repository.get_all() {
+          let adapter = SimpleApiAdapter::new(config.clone(), cache_repository.clone());
+          if !adapter.sync_due() {
+            continue;
+          }
+          match adapter.sync().await {
+            Ok(rows) => {
+              let mut updated = config.clone();
+              updated.last_synced_at = Some(chrono::Utc::now());
+              source_repository.save(&updated);
+              println!("synced \"{}\": {rows} rows", updated.name);
+            }
+            Err(e) => eprintln!("sync failed for \"{}\": {e}", config.name),
+          }
+        }
+      }
+    });
+
+    let api = CorApi::new(
+      auth_service,
+      token_service,
+      user_repository,
+      team_service,
+      source_repository,
+      cache_repository,
+    );
     let sockaddr = (self.config.listen_addr, self.config.listen_port);
     api.serve(SocketAddr::from(sockaddr)).await?;
     Ok(())
